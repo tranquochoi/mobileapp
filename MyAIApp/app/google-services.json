@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1015298061352",
+    "project_id": "theryna-fd1d9",
+    "storage_bucket": "theryna-fd1d9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1015298061352:android:d62d2d2555e43fa941311d",
+        "android_client_info": {
+          "package_name": "com.example.myaiapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6aE9Ymai3GdqjIqfsMS0ly47MpbuvKHA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
