@@ -1,6 +1,7 @@
 // FirestoreRepository.kt
 package com.example.myaiapp
 
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import java.util.Date
@@ -20,16 +21,18 @@ class FirestoreRepository {
         }
     }
 
-    suspend fun getMojiDocuments(homeName: String , collectionName: String): List<String> {
+    suspend fun getMojiDocuments(homeName: String, collectionName: String): List<DocumentSnapshot> {
         return try {
             val querySnapshot = db.collection("home").document(homeName)
                 .collection(collectionName).get().await()
 
-            querySnapshot.documents.mapNotNull { it.id }
+            querySnapshot.documents
         } catch (e: Exception) {
             emptyList()
         }
     }
+
+
 
     suspend fun getHomeKajiCollections(): List<String> {
         return try {
@@ -41,12 +44,12 @@ class FirestoreRepository {
         }
     }
 
-    suspend fun getKanjiDocuments(homeKanjiName: String , collectionName: String): List<String> {
+    suspend fun getKanjiDocuments(homeKanjiName: String , collectionName: String): List<DocumentSnapshot> {
         return try {
             val querySnapshot = db.collection("home_kanji").document(homeKanjiName)
                 .collection(collectionName).get().await()
 
-            querySnapshot.documents.mapNotNull { it.id }
+            querySnapshot.documents
         } catch (e: Exception) {
             emptyList()
         }

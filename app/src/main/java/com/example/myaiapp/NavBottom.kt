@@ -35,6 +35,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.myaiapp.AddNoteScreen
 import com.example.myaiapp.AddScreen
 import com.example.myaiapp.DetailKanjiScreen
+import com.example.myaiapp.DetailScreen
 import com.example.myaiapp.DetailTestScreen
 import com.example.myaiapp.Favorite
 import com.example.myaiapp.FirestoreRepository

@@ -54,6 +54,9 @@ android {
 dependencies {
     implementation ("org.jsoup:jsoup:1.14.3")
 
+    implementation ("androidx.media:media:1.4.1")
+
+    implementation ("com.squareup.okhttp3:okhttp:5.0.0-alpha.2")
 
     implementation ("androidx.activity:activity-compose:1.3.0")
     implementation ("androidx.compose.foundation:foundation:1.0.5")
