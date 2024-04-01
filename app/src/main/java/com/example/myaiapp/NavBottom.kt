@@ -39,6 +39,7 @@ import com.example.myaiapp.DetailScreen
 import com.example.myaiapp.DetailTestScreen
 import com.example.myaiapp.Favorite
 import com.example.myaiapp.FirestoreRepository
+import com.example.myaiapp.GrammarScreen
 import com.example.myaiapp.SearchScreen
 import com.example.myaiapp.Settings
 import com.google.firebase.database.DatabaseReference
@@ -179,6 +180,12 @@ fun MyApp() {
                         // Handle error or navigate back
                         navController.popBackStack()
                     }
+                }
+            }
+            composable("grammar/{grammarName}") { backStackEntry ->
+                val grammarName = backStackEntry.arguments?.getString("grammarName")
+                grammarName?.let { name ->
+                    GrammarScreen(navController = navController, homeName = name)
                 }
             }
 

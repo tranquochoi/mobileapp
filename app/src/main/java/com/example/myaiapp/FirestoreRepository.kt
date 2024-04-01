@@ -116,4 +116,25 @@ class FirestoreRepository {
             // Handle exception, e.g., log or notify user
         }
     }
+
+    suspend fun getGrammarCollections(): List<String> {
+        return try {
+            val querySnapshot = db.collection("grammar").get().await()
+            val grammarCollections = querySnapshot.documents.mapNotNull { it.id }
+            grammarCollections
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    suspend fun getGrammarDocuments(grammarName: String): List<DocumentSnapshot> {
+        return try {
+            val querySnapshot = db.collection("grammar").document(grammarName).collection("b1").get().await()
+            querySnapshot.documents
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+
 }

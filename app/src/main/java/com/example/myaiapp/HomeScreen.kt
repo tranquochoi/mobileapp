@@ -35,17 +35,25 @@ fun HomeScreen(navController: NavController) {
     var mojiList by remember { mutableStateOf(emptyList<String>()) }
     var kanjiList by remember { mutableStateOf(emptyList<String>()) }
     var testList by remember { mutableStateOf(emptyList<String>()) }
+    var grammarList by remember { mutableStateOf(emptyList<String>()) } // Danh sách ngữ pháp
 
 
     LaunchedEffect(true) {
         mojiList = firestoreRepository.getHomeCollections()
         kanjiList = firestoreRepository.getHomeKajiCollections()
         testList = firestoreRepository.getHomeTestCollections()
+        grammarList = firestoreRepository.getGrammarCollections() // Lấy danh sách ngữ pháp
 
     }
 
     Column {
         Column {
+            Text(
+                text = "Làm quen tiếng Nhật",
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(8.dp)
+            )
             mojiList.forEach { moji ->
                 Card(
                     onClick = {
@@ -85,6 +93,7 @@ fun HomeScreen(navController: NavController) {
         }
 
         Column {
+
             kanjiList.forEach { kanji ->
                 Card(
                     onClick = {
@@ -122,7 +131,14 @@ fun HomeScreen(navController: NavController) {
                 }
             }
         }
+
         Column {
+            Text(
+                text = "Luyện tập",
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(8.dp)
+            )
             testList.forEach { test ->
                 Card(
                     onClick = {
@@ -160,8 +176,55 @@ fun HomeScreen(navController: NavController) {
                 }
             }
         }
+        Column {
+            Text(
+                text = "Ngữ Pháp",
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(8.dp)
+            )
+            grammarList.forEach { grammar ->
+                Card(
+                    onClick = {
+                        navigateToGrammarDetailScreen(navController, grammar)
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                        .height(72.dp)
+                        .clip(MaterialTheme.shapes.medium)
+                        .clickable {
+                            navigateToGrammarDetailScreen(navController, grammar)
+                        },
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                    ) {
+                        // Placeholder icon or image
+                        Image(
+                            painter = painterResource(id = R.drawable.logo),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .clip(CircleShape)
+                        )
+                        // Only display the name of the grammar
+                        Text(
+                            text = grammar,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black,
+                            modifier = Modifier.padding(end = 18.dp)
+                        )
+                    }
+                }
+            }
+        }
     }
 }
+
 
 private fun navigateToDetailScreen(navController: NavController, moji: String) {
     navController.navigate("detail/$moji")
@@ -172,4 +235,7 @@ private fun navigateToDetailKanjiScreen(navController: NavController, kanji: Str
 }
 private fun navigateToTestScreen(navController: NavController, test: String) {
     navController.navigate("detailtest/$test")
+}
+private fun navigateToGrammarDetailScreen(navController: NavController, grammar: String) {
+    navController.navigate("grammar/$grammar")
 }
