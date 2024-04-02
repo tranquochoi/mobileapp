@@ -3,13 +3,21 @@ package com.example.myaiapp
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.firebase.firestore.DocumentSnapshot
+
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 
 @Composable
 fun GrammarScreen(navController: NavController, homeName: String?) {
@@ -23,18 +31,31 @@ fun GrammarScreen(navController: NavController, homeName: String?) {
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(8.dp)
-    ) {
-        Text(
-            text = "Ngữ pháp tiếng Nhật",
-            style = MaterialTheme.typography.titleSmall
-        )
+    CompositionLocalProvider(LocalContentColor provides Color.Black) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Back"
+                    )
+                }
+                Text(
+                    text = "Ngữ pháp",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+            }
 
-        // Hiển thị Tab và ViewPager
-        GrammarTabs(navController = navController, grammarDocuments = grammarDocuments)
+            // Hiển thị Tab và ViewPager
+            GrammarTabs(navController = navController, grammarDocuments = grammarDocuments)
+        }
     }
 }
 
@@ -82,20 +103,20 @@ fun GrammarItem(document: DocumentSnapshot, navController: NavController) {
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp, horizontal = 4.dp)
     ) {
         item {
-            Card(
+            Surface(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = { /* Navigate to detail screen */ }
+                color = Color.Transparent, // Đặt màu nền là trong suốt
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier.padding(4.dp)
                 ) {
                     grammar?.let {
+                        val processedGrammar = processGrammarText(it)
                         Text(
-                            text = it,
-                            style = MaterialTheme.typography.bodySmall,
+                            text = processedGrammar,
+                            style = MaterialTheme.typography.titleMedium,
                             modifier = Modifier.padding(bottom = 4.dp)
                         )
                     }
@@ -105,3 +126,18 @@ fun GrammarItem(document: DocumentSnapshot, navController: NavController) {
     }
 }
 
+fun processGrammarText(text: String): AnnotatedString {
+
+    val builder = AnnotatedString.Builder()
+
+    val sentences = text.split(". ")
+
+    sentences.forEachIndexed { index, sentence ->
+        builder.append(sentence)
+        if (index < sentences.size - 1) {
+            builder.append(".\n") // Thêm dấu xuống dòng sau mỗi câu
+        }
+    }
+
+    return builder.toAnnotatedString()
+}

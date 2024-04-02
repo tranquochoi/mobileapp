@@ -55,36 +55,10 @@ val firestoreRepository = FirestoreRepository()
 fun MyApp() {
     val navController = rememberNavController()
     var selectedNavItem by remember { mutableStateOf("home") }
+    var showBottomNav by remember { mutableStateOf(true) } // Thêm biến này để kiểm soát việc ẩn hiện BottomNavigation
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = "The RyNa",
-                        style = LocalTextStyle.current.copy(
-                            fontWeight = FontWeight.Bold,
-                        ),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = {
-                        navController.navigate("search")
-                    }) {
-                        Icon(imageVector = Icons.Default.Search, contentDescription = "Search")
-                    }
-                },
-                actions = {
-                    IconButton(onClick = {
-                        navController.navigate("settings")
-                    }) {
-                        Icon(imageVector = Icons.Default.Settings, contentDescription = "Settings")
-                    }
-                },
-            )
-        },
+
         bottomBar = {
             BottomNavigation(
                 modifier = Modifier,
@@ -92,6 +66,7 @@ fun MyApp() {
                 contentColor = Color.Gray, // Color of unselected icons and text
                 elevation = 8.dp,
             ) {
+
                 BottomNavigationItem(
                     selected = selectedNavItem == "add",
                     onClick = {
@@ -106,7 +81,20 @@ fun MyApp() {
                         )
                     }
                 )
-
+                BottomNavigationItem(
+                    selected = selectedNavItem == "search",
+                    onClick = {
+                        selectedNavItem = "search"
+                        navController.navigate("search")
+                    },
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = null,
+                            tint = if (selectedNavItem == "search") MaterialTheme.colorScheme.tertiary else LocalContentColor.current.copy(alpha = 0.6f)
+                        )
+                    }
+                )
                 BottomNavigationItem(
                     selected = selectedNavItem == "home",
                     onClick = {
@@ -185,10 +173,11 @@ fun MyApp() {
             composable("grammar/{grammarName}") { backStackEntry ->
                 val grammarName = backStackEntry.arguments?.getString("grammarName")
                 grammarName?.let { name ->
+                    // Ẩn BottomNavigation khi điều hướng đến màn hình Grammar
+                    showBottomNav = false
                     GrammarScreen(navController = navController, homeName = name)
                 }
             }
-
         }
     }
 }
