@@ -1,5 +1,6 @@
 package com.example.myaiapp
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -11,8 +12,15 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.myaiapp.FirestoreRepository
 import android.media.MediaPlayer
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
+import androidx.compose.ui.graphics.Color
 import com.google.firebase.firestore.DocumentSnapshot
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailKanjiScreen(navController: NavController, homeKanjiName: String?) {
     val firestoreRepository = FirestoreRepository()
@@ -37,22 +45,41 @@ fun DetailKanjiScreen(navController: NavController, homeKanjiName: String?) {
             .fillMaxSize()
             .padding(8.dp)
     ) {
+        // TopAppBar with back button
+        TopAppBar(
+            title = {
+                Text(text = "Bảng chữ cái Kanji")
+            },
+            navigationIcon = {
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
+        )
+
         // TabRow with two tabs
         TabRow(
             selectedTabIndex = selectedTabIndex,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp)
+                .padding(8.dp),
+            indicator = { tabPositions ->
+                TabRowDefaults.Indicator(
+                    modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]),
+                    color = Color.Black // Màu của tab được chọn
+                )
+            },
         ) {
             Tab(
                 selected = selectedTabIndex == 0,
                 onClick = { selectedTabIndex = 0 },
-                text = { Text("Cơ bản") }
+                text = { Text("Cơ bản", color = Color.Black) }
             )
             Tab(
                 selected = selectedTabIndex == 1,
                 onClick = { selectedTabIndex = 1 },
-                text = { Text("Nâng cao") }
+                text = { Text("Nâng cao", color = Color.Black) }
             )
         }
 
@@ -75,7 +102,7 @@ fun KanjiGrid(kanjiDocuments: List<DocumentSnapshot>, mediaPlayer: MediaPlayer) 
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 rowItems.forEach { document ->
-                    Button(
+                    OutlinedButton(
                         onClick = {
                             val url = document.getString("a") // Lấy URL từ trường "a" của document
                             if (url != null) {
@@ -87,9 +114,15 @@ fun KanjiGrid(kanjiDocuments: List<DocumentSnapshot>, mediaPlayer: MediaPlayer) 
                                 }
                             }
                         },
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(8.dp), // Bo góc hình vuông
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Black), // Màu nền đen
+                        contentPadding = PaddingValues(8.dp) // Thêm padding cho nút
                     ) {
-                        Text(text = document.id) // Hiển thị tên của mỗi document
+                        Text(
+                            text = document.id,
+                            color = Color.Black // Màu văn bản đen
+                        )
                     }
                 }
             }
