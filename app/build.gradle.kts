@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.kapt3.base.Kapt.kapt
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -54,7 +56,16 @@ android {
 dependencies {
     implementation ("org.jsoup:jsoup:1.14.3")
 
+    implementation ("com.github.bumptech.glide:glide:4.12.0")
+
+    implementation ("com.github.bumptech.glide:glide:4.12.0")
+    implementation ("com.github.bumptech.glide:compiler:4.12.0")
+
     implementation ("androidx.media:media:1.4.1")
+
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0-alpha01")
+
+    implementation ("io.coil-kt:coil-compose:1.4.0")
 
     implementation ("com.squareup.okhttp3:okhttp:5.0.0-alpha.2")
 
