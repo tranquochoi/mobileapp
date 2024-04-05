@@ -16,7 +16,8 @@ fun Settings() {
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Text("Settings Screen Content")
+        Text("Settings Screen Content",    onTextLayout = {}, // hoặc null nếu không cần
+        )
     }
 }
 

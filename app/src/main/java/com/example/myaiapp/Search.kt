@@ -37,7 +37,8 @@ fun SearchScreen() {
                 onValueChange = {
                     query = it
                 },
-                placeholder = { Text("Nhập từ tiếng Anh, ví dụ: hello") }, // Set placeholder text color here
+                placeholder = { Text("Nhập từ tiếng Anh, ví dụ: hello",     onTextLayout = {}, // hoặc null nếu không cần
+                ) }, // Set placeholder text color here
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Search
                 ),
@@ -78,7 +79,8 @@ fun SearchScreen() {
                     ),
                     contentPadding = PaddingValues(16.dp)
                 ) {
-                    Text("Search")
+                    Text("Search",    onTextLayout = {}, // hoặc null nếu không cần
+                    )
                 }
             }
 
@@ -92,7 +94,9 @@ fun SearchScreen() {
                     Text(
                         text = result,
                         modifier = Modifier
-                            .fillMaxWidth()
+                            .fillMaxWidth(),
+                        onTextLayout = {}, // hoặc null nếu không cần
+
                     )
                 }
             }

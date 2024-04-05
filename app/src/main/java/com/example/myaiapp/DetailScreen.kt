@@ -47,7 +47,8 @@ fun DetailScreen(navController: NavController, homeName: String?) {
         // TopAppBar with back button
         TopAppBar(
             title = {
-                Text(text = "Bảng chữ cái tiếng Nhật")
+                Text(text = "Bảng chữ cái tiếng Nhật",    onTextLayout = {}, // hoặc null nếu không cần
+                )
             },
             navigationIcon = {
                 IconButton(onClick = { navController.popBackStack() }) {
@@ -75,12 +76,14 @@ fun DetailScreen(navController: NavController, homeName: String?) {
             Tab(
                 selected = selectedTab == 0,
                 onClick = { selectedTab = 0; selectedMoji = null },
-                text = { Text("Bảng Hiragana", color = Color.Black) }
+                text = { Text("Bảng Hiragana", color = Color.Black,    onTextLayout = {}, // hoặc null nếu không cần
+                ) }
             )
             Tab(
                 selected = selectedTab == 1,
                 onClick = { selectedTab = 1; selectedMoji = null },
-                text = { Text("Bảng Katakana", color = Color.Black) }
+                text = { Text("Bảng Katakana", color = Color.Black,    onTextLayout = {}, // hoặc null nếu không cần
+                ) }
             )
         }
 
@@ -128,7 +131,9 @@ fun MojiGrid(mojiDocuments: List<DocumentSnapshot>, mediaPlayer: MediaPlayer, fi
                         Text(
                             text = document.id,
                             color = Color.Black, // Màu văn bản đen
-                            modifier = Modifier.padding(8.dp) // Thêm padding cho văn bản
+                            modifier = Modifier.padding(8.dp), // Thêm padding cho văn bản
+                            onTextLayout = {}, // hoặc null nếu không cần
+
                         )
                     }
                 }

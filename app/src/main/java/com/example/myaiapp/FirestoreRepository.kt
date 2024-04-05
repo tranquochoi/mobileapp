@@ -135,6 +135,24 @@ class FirestoreRepository {
             emptyList()
         }
     }
-
+    suspend fun getVocabularyDocuments(): List<VocabItem> {
+        return try {
+            val querySnapshot = db.collection("vocabulary").get().await()
+            val items = querySnapshot.documents.mapNotNull { document ->
+                val go = document.getString("go") ?: ""
+                val kanji = document.getString("kanji") ?: ""
+                val kotoba = document.getString("kotoba") ?: ""
+                val romaji = document.getString("romaji") ?: ""
+                if (go.isNotEmpty() && kanji.isNotEmpty() && kotoba.isNotEmpty() && romaji.isNotEmpty()) {
+                    VocabItem(go, kanji, kotoba, romaji)
+                } else {
+                    null
+                }
+            }
+            items
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
 
 }
