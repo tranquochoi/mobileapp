@@ -163,17 +163,21 @@ fun MyApp() {
                     }
                 }
             }
-            composable("grammar/{grammarName}") { backStackEntry ->
-                val grammarName = backStackEntry.arguments?.getString("grammarName")
-                grammarName?.let { name ->
-                    // Ẩn BottomNavigation khi điều hướng đến màn hình Grammar
-                    showBottomNav = false
-                    GrammarScreen(navController = navController, homeName = name)
+                composable("grammar/{grammarName}") { backStackEntry ->
+                    val grammarName = backStackEntry.arguments?.getString("grammarName")
+                    grammarName?.let { name ->
+                        // Ẩn BottomNavigation khi điều hướng đến màn hình Grammar
+                        showBottomNav = false
+                        GrammarScreen(navController = navController, homeName = name)
+                    }
                 }
-            }
-            composable("detailvocab/{go}") { backStackEntry ->
-                val vocab = backStackEntry.arguments?.getString("go")
-                vocab?.let { VocabularyScreen(navController, it) }
+            composable("vocab_detail/{vocab}") { backStackEntry ->
+                val vocab = backStackEntry.arguments?.getString("vocab")
+                vocab?.let { name ->
+                    // Ẩn BottomNavigation khi điều hướng đến màn hình Vocabulary
+                    showBottomNav = false
+                    VocabularyScreen(navController, name)
+                }
             }
 
         }

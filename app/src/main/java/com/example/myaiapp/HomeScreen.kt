@@ -4,11 +4,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text // Import only one Text function
 import androidx.compose.runtime.*
@@ -16,13 +13,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.myaiapp.R
-import com.example.myaiapp.VocabItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,14 +26,14 @@ fun HomeScreen(navController: NavController) {
     var kanjiList by remember { mutableStateOf(emptyList<String>()) }
     var testList by remember { mutableStateOf(emptyList<String>()) }
     var grammarList by remember { mutableStateOf(emptyList<String>()) } // Danh sách ngữ pháp
-    var vocabularyList by remember { mutableStateOf(emptyList<VocabItem>()) } // Danh sách từ vựng
+    var vocabularyList by remember { mutableStateOf(emptyList<String>()) } // Danh sách từ vựng
 
     LaunchedEffect(true) {
         mojiList = firestoreRepository.getHomeCollections()
         kanjiList = firestoreRepository.getHomeKajiCollections()
         testList = firestoreRepository.getHomeTestCollections()
         grammarList = firestoreRepository.getGrammarCollections() // Lấy danh sách ngữ pháp
-        vocabularyList = firestoreRepository.getVocabularyDocuments() // Lấy danh sách từ vựng
+        vocabularyList = firestoreRepository.getVocabularyCollections() // Lấy danh sách từ vựng
 
     }
 
@@ -219,16 +214,17 @@ fun GrammarSection(grammarList: List<String>, navController: NavController) {
         }
     }
 }
+
 @Composable
-fun VocabularySection(vocabularyList: List<VocabItem>, navController: NavController) {
+fun VocabularySection(vocabularyList: List<String>, navController: NavController) {
     Column {
-        vocabularyList.forEach { item ->
+        vocabularyList.forEach { vocab ->
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 4.dp)
                     .clickable {
-                        navigateToVocabularyDetailScreen(navController, item.go)
+                        navigateToVocabularyDetailScreen(navController, vocab)
                     },
                 shape = MaterialTheme.shapes.medium
             ) {
@@ -236,15 +232,16 @@ fun VocabularySection(vocabularyList: List<VocabItem>, navController: NavControl
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(8.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.CheckCircle,
+                    Image(
+                        painter = painterResource(id = R.drawable.voca), // Thay 'your_vocabulary_icon' bằng id của biểu tượng từ vựng của bạn
                         contentDescription = null,
                         modifier = Modifier
                             .size(48.dp)
+                            .clip(CircleShape)
                     )
                     Spacer(modifier = Modifier.width(16.dp))
                     Text(
-                        text = "Vocabulary", // Chỉ đơn giản hiển thị "Vocabulary" cho phần này
+                        text = "Từ vựng", // Thay đổi văn bản tùy ý
                         fontWeight = FontWeight.Bold,
                         color = Color.Black,
                         onTextLayout = {} // Provide an empty lambda
@@ -254,6 +251,7 @@ fun VocabularySection(vocabularyList: List<VocabItem>, navController: NavControl
         }
     }
 }
+
 private fun navigateToDetailScreen(navController: NavController, moji: String) {
     navController.navigate("detail/$moji")
 }
@@ -269,6 +267,6 @@ private fun navigateToTestScreen(navController: NavController, test: String) {
 private fun navigateToGrammarDetailScreen(navController: NavController, grammar: String) {
     navController.navigate("grammar/$grammar")
 }
-private fun navigateToVocabularyDetailScreen(navController: NavController, go: String) {
-    navController.navigate("detailvocab/$go")
+private fun navigateToVocabularyDetailScreen(navController: NavController, vocab: String) {
+    navController.navigate("vocab_detail/$vocab")
 }

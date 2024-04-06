@@ -33,7 +33,6 @@ class FirestoreRepository {
     }
 
 
-
     suspend fun getHomeKajiCollections(): List<String> {
         return try {
             val querySnapshot = db.collection("home_kanji").get().await()
@@ -44,7 +43,10 @@ class FirestoreRepository {
         }
     }
 
-    suspend fun getKanjiDocuments(homeKanjiName: String , collectionName: String): List<DocumentSnapshot> {
+    suspend fun getKanjiDocuments(
+        homeKanjiName: String,
+        collectionName: String
+    ): List<DocumentSnapshot> {
         return try {
             val querySnapshot = db.collection("home_kanji").document(homeKanjiName)
                 .collection(collectionName).get().await()
@@ -65,7 +67,7 @@ class FirestoreRepository {
         }
     }
 
-    suspend fun getTestDocuments(homeTestName: String , collectionName: String): List<String> {
+    suspend fun getTestDocuments(homeTestName: String, collectionName: String): List<String> {
         return try {
             val querySnapshot = db.collection("test").document(homeTestName)
                 .collection(collectionName).get().await()
@@ -75,6 +77,7 @@ class FirestoreRepository {
             emptyList()
         }
     }
+
     suspend fun getAllQuizDocuments(homeTestName: String, collectionName: String): List<QuizItem> {
         return try {
             val querySnapshot = db.collection("test").document(homeTestName)
@@ -129,30 +132,32 @@ class FirestoreRepository {
 
     suspend fun getGrammarDocuments(grammarName: String): List<DocumentSnapshot> {
         return try {
-            val querySnapshot = db.collection("grammar").document(grammarName).collection("b1").get().await()
+            val querySnapshot =
+                db.collection("grammar").document(grammarName).collection("b1").get().await()
             querySnapshot.documents
         } catch (e: Exception) {
             emptyList()
         }
     }
-    suspend fun getVocabularyDocuments(): List<VocabItem> {
+
+    suspend fun getVocabularyCollections(): List<String> {
         return try {
             val querySnapshot = db.collection("vocabulary").get().await()
-            val items = querySnapshot.documents.mapNotNull { document ->
-                val go = document.getString("go") ?: ""
-                val kanji = document.getString("kanji") ?: ""
-                val kotoba = document.getString("kotoba") ?: ""
-                val romaji = document.getString("romaji") ?: ""
-                if (go.isNotEmpty() && kanji.isNotEmpty() && kotoba.isNotEmpty() && romaji.isNotEmpty()) {
-                    VocabItem(go, kanji, kotoba, romaji)
-                } else {
-                    null
-                }
-            }
-            items
+            val vocabularyCollections = querySnapshot.documents.mapNotNull { it.id }
+            vocabularyCollections
         } catch (e: Exception) {
             emptyList()
         }
     }
 
+    suspend fun getVocabularyDocuments(vocabularyName: String): List<DocumentSnapshot> {
+        return try {
+            val querySnapshot =
+                db.collection("vocabulary").document(vocabularyName).collection("vocab1").get()
+                    .await()
+            querySnapshot.documents
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
 }
