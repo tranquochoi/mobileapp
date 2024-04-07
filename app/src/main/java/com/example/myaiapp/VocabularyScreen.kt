@@ -47,6 +47,7 @@ fun VocabularyScreen(navController: NavController, homeName: String?) {
             title = {
                 Text(
                     text = "Từ vựng",
+                    onTextLayout = {},
                     style = MaterialTheme.typography.titleLarge
                 )
             },
@@ -74,7 +75,7 @@ fun VocabularyScreen(navController: NavController, homeName: String?) {
                 Tab(
                     selected = selectedTabIndex == index,
                     onClick = { selectedTabIndex = index },
-                    text = { Text("Bài ${index + 1}", color = Color.Black) },
+                    text = { Text("Bài ${index + 1}", color = Color.Black, onTextLayout = {}) },
                     modifier = Modifier
                 )
             }
@@ -138,12 +139,14 @@ fun VocabularyRow(title: String, content: String) {
             text = title,
             style = MaterialTheme.typography.titleSmall,
             color = Color.Black,
-            modifier = Modifier.padding(end = 4.dp)
+            modifier = Modifier.padding(end = 4.dp),
+            onTextLayout = {}
         )
         Text(
             text = content,
             style = MaterialTheme.typography.titleSmall,
-            color = Color.Black
+            color = Color.Black,
+            onTextLayout = {}
         )
     }
 }
