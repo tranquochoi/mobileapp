@@ -143,21 +143,20 @@ class FirestoreRepository {
     suspend fun getVocabularyCollections(): List<String> {
         return try {
             val querySnapshot = db.collection("vocabulary").get().await()
-            val vocabularyCollections = querySnapshot.documents.mapNotNull { it.id }
-            vocabularyCollections
+            querySnapshot.documents.mapNotNull { it.id }
         } catch (e: Exception) {
             emptyList()
         }
     }
 
-    suspend fun getVocabularyDocuments(vocabularyName: String): List<DocumentSnapshot> {
+    suspend fun getVocabularyDocuments(vocabularyName: String, collectionName: String): List<DocumentSnapshot> {
         return try {
-            val querySnapshot =
-                db.collection("vocabulary").document(vocabularyName).collection("vocab1").get()
-                    .await()
+            val querySnapshot = db.collection("vocabulary").document(vocabularyName)
+                .collection(collectionName).get().await()
             querySnapshot.documents
         } catch (e: Exception) {
             emptyList()
         }
     }
+
 }
