@@ -41,12 +41,13 @@ fun HomeScreen(navController: NavController) {
         SectionTitle("Làm quen tiếng Nhật")
         MojiSection(mojiList, navController)
         GrammarSection(grammarList, navController)
+        VocabularySection(vocabularyList, navController)
         SectionTitle("Bảng chữ Kanji")
         KanjiSection(kanjiList, navController)
+
         SectionTitle("Luyện tập")
         TestSection(testList, navController)
-        SectionTitle("Bảng từ vựng")
-        VocabularySection(vocabularyList, navController)
+
     }
 }
 

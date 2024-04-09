@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.myaiapp.FirestoreRepository
 import com.google.firebase.firestore.DocumentSnapshot
+import kotlinx.coroutines.launch
 import java.io.IOException
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,6 +40,8 @@ fun VocabularyScreen(navController: NavController, homeName: String?) {
     }
 
     var selectedTabIndex by remember { mutableStateOf(0) }
+    var playAudioClicked by remember { mutableStateOf(false) }
+    var isPlaying by remember { mutableStateOf(false) } // Trạng thái của âm thanh đang phát
 
     val vocabularyLists = listOf(vocab1Documents, vocab2Documents)
 
@@ -64,17 +67,9 @@ fun VocabularyScreen(navController: NavController, homeName: String?) {
                 // Thêm biểu tượng hình ảnh play vào phía bên trái của TopAppBar
                 IconButton(
                     onClick = {
-                        val audioUrl = vocab1Documents[selectedTabIndex].getString("audio")
-                        audioUrl?.let { url ->
-                            try {
-                                val mediaPlayer = MediaPlayer().apply {
-                                    setDataSource(url)
-                                    prepareAsync()
-                                    setOnPreparedListener { it.start() }
-                                }
-                            } catch (e: IOException) {
-                                // Xử lý lỗi khi phát âm thanh
-                            }
+                        val audioUrls = vocabularyLists[selectedTabIndex].mapNotNull { it.getString("audio") }
+                        if (audioUrls.isNotEmpty()) {
+                            playAudioClicked = true
                         }
                     }
                 ) {
@@ -106,35 +101,42 @@ fun VocabularyScreen(navController: NavController, homeName: String?) {
             }
         }
 
+        if (playAudioClicked) {
+            val audioUrls = vocabularyLists[selectedTabIndex].mapNotNull { it.getString("audio") }
+            if (audioUrls.isNotEmpty()) {
+                playAudioUrls(audioUrls)
+            }
+        }
 
         when (selectedTabIndex) {
-            0 -> VocabularyList(vocabularyDocuments = vocab1Documents, navController = navController)
-            1 -> VocabularyList(vocabularyDocuments = vocab2Documents, navController = navController)
+            0 -> VocabularyList(vocabularyDocuments = vocab1Documents, navController = navController, isPlaying = isPlaying)
+            1 -> VocabularyList(vocabularyDocuments = vocab2Documents, navController = navController, isPlaying = isPlaying)
         }
     }
 }
 
-
 @Composable
-fun VocabularyList(vocabularyDocuments: List<DocumentSnapshot>, navController: NavController) {
+fun VocabularyList(vocabularyDocuments: List<DocumentSnapshot>, navController: NavController, isPlaying: Boolean) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(vertical = 8.dp)
     ) {
         items(vocabularyDocuments) { document ->
-            VocabularyItem(document = document, navController = navController)
+            VocabularyItem(document = document, navController = navController, isPlaying = isPlaying)
         }
     }
 }
 
 @Composable
-fun VocabularyItem(document: DocumentSnapshot, navController: NavController) {
+fun VocabularyItem(document: DocumentSnapshot, navController: NavController, isPlaying: Boolean) {
     val kotoba = document.getString("kotoba") ?: ""
     val kanji = document.getString("kanji") ?: ""
     val go = document.getString("go") ?: ""
     val romaji = document.getString("romaji") ?: ""
     val audioUrl = document.getString("audio")
+
+    var itemIsPlaying by remember { mutableStateOf(isPlaying) } // Sử dụng biến var để theo dõi trạng thái
 
     Surface(
         modifier = Modifier
@@ -146,14 +148,22 @@ fun VocabularyItem(document: DocumentSnapshot, navController: NavController) {
                         val mediaPlayer = MediaPlayer().apply {
                             setDataSource(url)
                             prepareAsync()
-                            setOnPreparedListener { it.start() }
+                            setOnPreparedListener {
+                                it.start()
+                                // Cập nhật trạng thái khi âm thanh bắt đầu phát
+                                itemIsPlaying = true
+                            }
+                            setOnCompletionListener {
+                                // Cập nhật trạng thái khi âm thanh kết thúc
+                                itemIsPlaying = false
+                            }
                         }
                     } catch (e: IOException) {
                         // Xử lý lỗi khi phát âm thanh
                     }
                 }
             }
-            .border(1.dp, Color.Black, RoundedCornerShape(8.dp)),
+            .border(1.dp, if (itemIsPlaying) Color.Red else Color.Black, RoundedCornerShape(8.dp)),
         color = Color.White
     ) {
         Column(
@@ -166,6 +176,7 @@ fun VocabularyItem(document: DocumentSnapshot, navController: NavController) {
         }
     }
 }
+
 @Composable
 fun VocabularyRow(title: String, content: String) {
     Row(
@@ -185,8 +196,29 @@ fun VocabularyRow(title: String, content: String) {
             text = content,
             style = MaterialTheme.typography.titleSmall,
             color = Color.Blue,
-
-
         )
+    }
+}
+
+@Composable
+fun playAudioUrls(audioUrls: List<String>) {
+    var currentAudioIndex by remember { mutableStateOf(0) }
+
+    LaunchedEffect(Unit) {
+        val mediaPlayer = MediaPlayer()
+        mediaPlayer.setOnCompletionListener {
+            currentAudioIndex++
+            if (currentAudioIndex < audioUrls.size) {
+                mediaPlayer.reset()
+                mediaPlayer.setDataSource(audioUrls[currentAudioIndex])
+                mediaPlayer.prepare()
+                mediaPlayer.start()
+            } else {
+                mediaPlayer.release()
+            }
+        }
+        mediaPlayer.setDataSource(audioUrls[currentAudioIndex])
+        mediaPlayer.prepare()
+        mediaPlayer.start()
     }
 }
