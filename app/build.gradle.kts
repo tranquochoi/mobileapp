@@ -56,7 +56,11 @@ android {
 dependencies {
     implementation ("org.jsoup:jsoup:1.14.3")
 
+    implementation ("com.google.android.exoplayer:exoplayer-core:2.16.1")
+    implementation ("com.google.android.exoplayer:exoplayer-ui:2.16.1")
+
     implementation ("com.github.bumptech.glide:glide:4.12.0")
+    implementation ("androidx.compose.material:material-icons-extended:1.0.5")
 
     implementation ("com.github.bumptech.glide:glide:4.12.0")
     implementation ("com.github.bumptech.glide:compiler:4.12.0")

@@ -1,13 +1,16 @@
 package com.example.myapp
 
+import android.media.MediaPlayer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
@@ -18,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.myaiapp.FirestoreRepository
 import com.google.firebase.firestore.DocumentSnapshot
+import java.io.IOException
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,6 +60,27 @@ fun VocabularyScreen(navController: NavController, homeName: String?) {
                     Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                 }
             },
+            actions = {
+                // Thêm biểu tượng hình ảnh play vào phía bên trái của TopAppBar
+                IconButton(
+                    onClick = {
+                        val audioUrl = vocab1Documents[selectedTabIndex].getString("audio")
+                        audioUrl?.let { url ->
+                            try {
+                                val mediaPlayer = MediaPlayer().apply {
+                                    setDataSource(url)
+                                    prepareAsync()
+                                    setOnPreparedListener { it.start() }
+                                }
+                            } catch (e: IOException) {
+                                // Xử lý lỗi khi phát âm thanh
+                            }
+                        }
+                    }
+                ) {
+                    Icon(Icons.Default.PlayArrow, contentDescription = "Play Audio")
+                }
+            },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -89,6 +114,7 @@ fun VocabularyScreen(navController: NavController, homeName: String?) {
     }
 }
 
+
 @Composable
 fun VocabularyList(vocabularyDocuments: List<DocumentSnapshot>, navController: NavController) {
     LazyColumn(
@@ -108,11 +134,25 @@ fun VocabularyItem(document: DocumentSnapshot, navController: NavController) {
     val kanji = document.getString("kanji") ?: ""
     val go = document.getString("go") ?: ""
     val romaji = document.getString("romaji") ?: ""
+    val audioUrl = document.getString("audio")
 
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
+            .clickable {
+                audioUrl?.let { url ->
+                    try {
+                        val mediaPlayer = MediaPlayer().apply {
+                            setDataSource(url)
+                            prepareAsync()
+                            setOnPreparedListener { it.start() }
+                        }
+                    } catch (e: IOException) {
+                        // Xử lý lỗi khi phát âm thanh
+                    }
+                }
+            }
             .border(1.dp, Color.Black, RoundedCornerShape(8.dp)),
         color = Color.White
     ) {
@@ -126,7 +166,6 @@ fun VocabularyItem(document: DocumentSnapshot, navController: NavController) {
         }
     }
 }
-
 @Composable
 fun VocabularyRow(title: String, content: String) {
     Row(
@@ -138,16 +177,16 @@ fun VocabularyRow(title: String, content: String) {
         Text(
             text = title,
             style = MaterialTheme.typography.titleSmall,
-            color = Color.Black,
+            color = Color.Red, // Đổi màu sang đỏ
             modifier = Modifier.padding(end = 4.dp),
             onTextLayout = {}
         )
         Text(
             text = content,
             style = MaterialTheme.typography.titleSmall,
-            color = Color.Black,
-            onTextLayout = {}
+            color = Color.Blue,
+
+
         )
     }
 }
-
