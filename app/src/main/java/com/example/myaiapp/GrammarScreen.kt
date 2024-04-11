@@ -49,7 +49,9 @@ fun GrammarScreen(navController: NavController, homeName: String?) {
                 Text(
                     text = "Ngữ pháp",
                     style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(start = 8.dp)
+                    modifier = Modifier.padding(start = 8.dp),
+                    onTextLayout = {}, // hoặc null nếu không cần
+
                 )
             }
 
@@ -81,7 +83,9 @@ fun GrammarTabs(navController: NavController, grammarDocuments: List<DocumentSna
                 ) {
                     Text(
                         text = "Bài ${grammarDocuments.indexOf(document) + 1}",
-                        color = if (isSelected) Color.White else Color.Black
+                        color = if (isSelected) Color.White else Color.Black,
+                        onTextLayout = {}, // hoặc null nếu không cần
+
                     )
                 }
             }

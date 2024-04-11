@@ -15,7 +15,8 @@ fun Favorite() {
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Text("Favorite Screen Content")
+        Text("Favorite Screen Content",    onTextLayout = {}, // hoặc null nếu không cần
+        )
     }
 }
 

@@ -61,7 +61,8 @@
                         onClick = {
                             selectedTabIndex = index
                         },
-                        text = { Text("Quiz ${index + 1}") }
+                        text = { Text("Quiz ${index + 1}",    onTextLayout = {}, // hoặc null nếu không cần
+                        ) }
                     )
                 }
             }
@@ -97,11 +98,14 @@
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            Text(text = "${quizItem.ques}", modifier = Modifier.padding(bottom = 8.dp))
+            Text(text = "${quizItem.ques}", modifier = Modifier.padding(bottom = 8.dp),    onTextLayout = {}, // hoặc null nếu không cần
+            )
             Text(
                 text = quizItem.quiz,
                 modifier = Modifier.padding(bottom = 8.dp),
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                onTextLayout = {}, // hoặc null nếu không cần
+
             )
 
             quizItem.op.forEach { (optionKey, optionValue) ->
@@ -125,7 +129,9 @@
                         contentColor = textColor // Set text color directly
                     )
                 ) {
-                    Text(text = optionValue)
+                    Text(text = optionValue,    onTextLayout = {}, // hoặc null nếu không cần
+                    )
+
                 }
             }
 
@@ -142,7 +148,8 @@
                     contentColor = if (quizState.optionSelected == quizItem.ans) Color.Green else Color.Gray
                 ),
                 content = {
-                    Text(text = "${quizItem.ans}")
+                    Text(text = "${quizItem.ans}",    onTextLayout = {}, // hoặc null nếu không cần
+                    )
                 }
             )
 
@@ -150,7 +157,9 @@
             if (quizState.showAnswer) {
                 Text(
                     text = "Answer: ${quizItem.ans}",
-                    color = Color.Green
+                    color = Color.Green,
+                    onTextLayout = {}, // hoặc null nếu không cần
+
                 )
             }
         }

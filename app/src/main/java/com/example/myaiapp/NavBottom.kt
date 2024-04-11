@@ -3,21 +3,16 @@ package com.example.myapp
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -26,8 +21,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -58,73 +51,75 @@ fun MyApp() {
     var showBottomNav by remember { mutableStateOf(true) } // Thêm biến này để kiểm soát việc ẩn hiện BottomNavigation
 
     Scaffold(
-
         bottomBar = {
-            BottomNavigation(
-                modifier = Modifier,
-                backgroundColor = MaterialTheme.colorScheme.surface,
-                contentColor = Color.Gray, // Color of unselected icons and text
-                elevation = 8.dp,
-            ) {
+            if (showBottomNav) {
+                BottomNavigation(
+                    modifier = Modifier
+                        .padding(bottom = 42.dp), // Tăng khoảng cách phía dưới BottomNavigation
+                    backgroundColor = MaterialTheme.colorScheme.surface,
+                    contentColor = Color.Gray, // Color of unselected icons and text
+                    elevation = 16.dp, // Tăng độ nâng của BottomAppBar
+                ) {
 
-                BottomNavigationItem(
-                    selected = selectedNavItem == "add",
-                    onClick = {
-                        selectedNavItem = "add"
-                        navController.navigate("add")
-                    },
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = null,
-                            tint = if (selectedNavItem == "add") MaterialTheme.colorScheme.primary else LocalContentColor.current.copy(alpha = 0.6f)
-                        )
-                    }
-                )
-                BottomNavigationItem(
-                    selected = selectedNavItem == "search",
-                    onClick = {
-                        selectedNavItem = "search"
-                        navController.navigate("search")
-                    },
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = null,
-                            tint = if (selectedNavItem == "search") MaterialTheme.colorScheme.tertiary else LocalContentColor.current.copy(alpha = 0.6f)
-                        )
-                    }
-                )
-                BottomNavigationItem(
-                    selected = selectedNavItem == "home",
-                    onClick = {
-                        selectedNavItem = "home"
-                        navController.navigate("home")
-                    },
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Default.Home,
-                            contentDescription = null,
-                            tint = if (selectedNavItem == "home") MaterialTheme.colorScheme.primaryContainer else LocalContentColor.current.copy(alpha = 0.6f)
-                        )
-                    }
-                )
+                    BottomNavigationItem(
+                        selected = selectedNavItem == "add",
+                        onClick = {
+                            selectedNavItem = "add"
+                            navController.navigate("add")
+                        },
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = null,
+                                tint = if (selectedNavItem == "add") MaterialTheme.colorScheme.primary else LocalContentColor.current.copy(alpha = 0.6f)
+                            )
+                        }
+                    )
+                    BottomNavigationItem(
+                        selected = selectedNavItem == "search",
+                        onClick = {
+                            selectedNavItem = "search"
+                            navController.navigate("search")
+                        },
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = null,
+                                tint = if (selectedNavItem == "search") MaterialTheme.colorScheme.tertiary else LocalContentColor.current.copy(alpha = 0.6f)
+                            )
+                        }
+                    )
+                    BottomNavigationItem(
+                        selected = selectedNavItem == "home",
+                        onClick = {
+                            selectedNavItem = "home"
+                            navController.navigate("home")
+                        },
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Default.Home,
+                                contentDescription = null,
+                                tint = if (selectedNavItem == "home") MaterialTheme.colorScheme.primaryContainer else LocalContentColor.current.copy(alpha = 0.6f)
+                            )
+                        }
+                    )
 
-                BottomNavigationItem(
-                    selected = selectedNavItem == "favorite",
-                    onClick = {
-                        selectedNavItem = "favorite"
-                        navController.navigate("favorite")
-                    },
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Default.Favorite,
-                            contentDescription = null,
-                            tint = if (selectedNavItem == "favorite") MaterialTheme.colorScheme.error else LocalContentColor.current.copy(alpha = 0.6f)
-                        )
-                    }
-                )
+                    BottomNavigationItem(
+                        selected = selectedNavItem == "favorite",
+                        onClick = {
+                            selectedNavItem = "favorite"
+                            navController.navigate("favorite")
+                        },
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Default.Favorite,
+                                contentDescription = null,
+                                tint = if (selectedNavItem == "favorite") MaterialTheme.colorScheme.error else LocalContentColor.current.copy(alpha = 0.6f)
+                            )
+                        }
+                    )
 
+                }
             }
         }
     ) { innerPadding ->
@@ -178,6 +173,16 @@ fun MyApp() {
                     GrammarScreen(navController = navController, homeName = name)
                 }
             }
+            composable("vocab_detail/{vocab}") { backStackEntry ->
+                val vocab = backStackEntry.arguments?.getString("vocab")
+                vocab?.let { name ->
+                    // Ẩn BottomNavigation khi điều hướng đến màn hình Vocabulary
+                    showBottomNav = false
+                    VocabularyScreen(navController, name)
+                }
+            }
+
         }
     }
 }
+

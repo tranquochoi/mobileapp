@@ -83,9 +83,12 @@ fun NoteItem(note: Note, onItemClick: () -> Unit) {
             .padding(8.dp)
             .clickable { onItemClick() } // Handle click event
     ) {
-        Text(text = "${note.title}", fontWeight = FontWeight.Bold, fontSize = 28.sp)
-        Text(text = "${note.content}")
-        Text(text = "${formatTimestamp(note.timestamp)}")
+        Text(text = "${note.title}", fontWeight = FontWeight.Bold, fontSize = 28.sp,     onTextLayout = {}, // hoặc null nếu không cần
+        )
+        Text(text = "${note.content}",     onTextLayout = {}, // hoặc null nếu không cần
+        )
+        Text(text = "${formatTimestamp(note.timestamp)}",     onTextLayout = {}, // hoặc null nếu không cần
+        )
     }
 }
 
@@ -111,7 +114,8 @@ fun AddNoteScreen(navController: NavController, firestoreRepository: FirestoreRe
         TextField(
             value = title,
             onValueChange = { title = it },
-            label = { Text("Title") },
+            label = { Text("Title",     onTextLayout = {}, // hoặc null nếu không cần
+            ) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 8.dp)
@@ -120,7 +124,8 @@ fun AddNoteScreen(navController: NavController, firestoreRepository: FirestoreRe
         TextField(
             value = content,
             onValueChange = { content = it },
-            label = { Text("Content") },
+            label = { Text("Content",    onTextLayout = {}, // hoặc null nếu không cần
+            ) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 8.dp)
@@ -147,7 +152,8 @@ fun AddNoteScreen(navController: NavController, firestoreRepository: FirestoreRe
                 .fillMaxWidth()
                 .padding(top = 16.dp)
         ) {
-            Text("Add Note")
+            Text("Add Note",    onTextLayout = {}, // hoặc null nếu không cần
+            )
         }
     }
 }
@@ -159,8 +165,11 @@ fun DetailAddScreen(note: Note) {
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Text(text = "${note.title}", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-        Text(text = "${note.content}", fontSize = 16.sp)
-        Text(text = "${formatTimestamp(note.timestamp)}", fontSize = 14.sp, fontStyle = FontStyle.Italic)
+        Text(text = "${note.title}", fontSize = 20.sp, fontWeight = FontWeight.Bold,    onTextLayout = {}, // hoặc null nếu không cần
+        )
+        Text(text = "${note.content}", fontSize = 16.sp,    onTextLayout = {}, // hoặc null nếu không cần
+        )
+        Text(text = "${formatTimestamp(note.timestamp)}", fontSize = 14.sp, fontStyle = FontStyle.Italic,    onTextLayout = {}, // hoặc null nếu không cần
+        )
     }
 }

@@ -77,7 +77,8 @@ fun DetailKanjiScreen(navController: NavController, homeKanjiName: String?) {
         // TopAppBar with back button
         TopAppBar(
             title = {
-                Text(text = "Bảng chữ cái Kanji")
+                Text(text = "Bảng chữ cái Kanji",    onTextLayout = {}, // hoặc null nếu không cần
+                )
             },
             navigationIcon = {
                 IconButton(onClick = { navController.popBackStack() }) {
@@ -103,12 +104,14 @@ fun DetailKanjiScreen(navController: NavController, homeKanjiName: String?) {
             Tab(
                 selected = selectedTabIndex == 0,
                 onClick = { selectedTabIndex = 0 },
-                text = { Text("Cơ bản", color = Color.Black) }
+                text = { Text("Cơ bản", color = Color.Black,    onTextLayout = {}, // hoặc null nếu không cần
+                ) }
             )
             Tab(
                 selected = selectedTabIndex == 1,
                 onClick = { selectedTabIndex = 1 },
-                text = { Text("Nâng cao", color = Color.Black) }
+                text = { Text("Nâng cao", color = Color.Black,    onTextLayout = {}, // hoặc null nếu không cần
+                ) }
             )
         }
 
@@ -177,7 +180,8 @@ fun KanjiGrid(kanjiDocuments: List<DocumentSnapshot>) {
                                 }
                                 Text(
                                     text = text,
-                                    color = Color.Black
+                                    color = Color.Black,    onTextLayout = {}, // hoặc null nếu không cần
+
                                 )
                             }
                         }
@@ -208,7 +212,8 @@ fun CustomAlertDialog(
         ) {
             AlertDialog(
                 onDismissRequest = onDismissRequest,
-                title = { Text(text = "Cách viết") },
+                title = { Text(text = "Cách viết",    onTextLayout = {}, // hoặc null nếu không cần
+                ) },
                 text = {
                     GlideGifImage(
                         url = gifUrl,
@@ -222,7 +227,8 @@ fun CustomAlertDialog(
                             contentColor = Color.Black
                         )
                     ) {
-                        Text(text = "Close")
+                        Text(text = "Close",    onTextLayout = {}, // hoặc null nếu không cần
+                        )
                     }
                 }
             )
