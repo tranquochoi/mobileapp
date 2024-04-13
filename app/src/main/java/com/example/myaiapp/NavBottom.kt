@@ -33,6 +33,7 @@ import com.example.myaiapp.DetailTestScreen
 import com.example.myaiapp.Favorite
 import com.example.myaiapp.FirestoreRepository
 import com.example.myaiapp.GrammarScreen
+import com.example.myaiapp.KaiwaScreen
 import com.example.myaiapp.SearchScreen
 import com.example.myaiapp.Settings
 import com.google.firebase.database.DatabaseReference
@@ -169,7 +170,6 @@ fun MyApp() {
                 val grammarName = backStackEntry.arguments?.getString("grammarName")
                 grammarName?.let { name ->
                     // Ẩn BottomNavigation khi điều hướng đến màn hình Grammar
-                    showBottomNav = false
                     GrammarScreen(navController = navController, homeName = name)
                 }
             }
@@ -177,11 +177,16 @@ fun MyApp() {
                 val vocab = backStackEntry.arguments?.getString("vocab")
                 vocab?.let { name ->
                     // Ẩn BottomNavigation khi điều hướng đến màn hình Vocabulary
-                    showBottomNav = false
                     VocabularyScreen(navController, name)
                 }
             }
-
+            composable("kaiwa_detail/{kaiwa}") { backStackEntry ->
+                val kaiwa = backStackEntry.arguments?.getString("kaiwa")
+                kaiwa?.let { name ->
+                    // Ẩn BottomNavigation khi điều hướng đến màn hình Vocabulary
+                    KaiwaScreen(navController, name)
+                }
+            }
         }
     }
 }
