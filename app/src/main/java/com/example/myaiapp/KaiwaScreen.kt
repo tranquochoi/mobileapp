@@ -141,7 +141,7 @@
             }
         } ?: run {
             Text(
-                text = "Error: Video URL not found",
+                text = "Error: Video URL not found!",
                 modifier = Modifier.padding(8.dp)
             )
         }
