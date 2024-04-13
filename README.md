@@ -41,9 +41,11 @@ Sau khi đã cài đặt thành công, bạn có thể bắt đầu tạo dự �
 
 # Hướng dẫn Kết nối Firestore với Android Studio
 
+Firestore là một cơ sở dữ liệu NoSQL theo tài liệu dựa trên tài liệu của Google. Nó được thiết kế để lưu trữ và đồng bộ dữ liệu của ứng dụng của bạn trên nhiều thiết bị và cung cấp tích hợp dễ dàng với các dịch vụ Firebase khác. Để biết thêm thông tin về Firestore, bạn có thể truy cập  của Google.
+
 ## 1. Tạo Dự án Firebase
 
-Trước tiên, để kết nối Firestore với Android Studio, bạn cần truy cập vào trang chủ của Firebase và thực hiện các bước sau:
+Trước tiên, để kết nối Firestore với Android Studio, bạn cần truy cập vào [trang chủ Firebase](https://firebase.google.com/docs/firestore) và thực hiện các bước sau:
 
 ### Bước 1: Tạo Dự án Firebase
 - Truy cập trang chủ của Firebase.
@@ -82,3 +84,4 @@ Trước tiên, để kết nối Firestore với Android Studio, bạn cần tr
 - Nếu cần thiết, thiết lập quyền truy cập.
 
 Chúc mừng! Bạn đã kết nối Firestore với Android Studio thành công. Bây giờ bạn có thể thêm các collection và sử dụng nó trong ứng dụng của mình.
+
