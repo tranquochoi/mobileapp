@@ -65,17 +65,22 @@ Trước tiên, để kết nối Firestore với Android Studio, chúng ta cầ
 
 ### Bước 1: Đăng ký ứng dụng
 - Nhấn vào biểu tượng Android trên màn hình để thêm một "Android App".
+
 ![Giao diện chính của Android Studio](https://firebasestorage.googleapis.com/v0/b/theryna-fd1d9.appspot.com/o/github%2Ff3.png?alt=media&token=fd4e2206-bd44-44b4-b1ce-28d07b6de58e)
+
 - Nhập gói ứng dụng Android.
 
 ### Bước 2: Tải xuống và thêm tệp cấu hình
 - Tải xuống tệp `google-services.json`.
 - Paste tệp vào thư mục "app" của dự án Android.
+
 ![Giao diện chính của Android Studio](https://firebasestorage.googleapis.com/v0/b/theryna-fd1d9.appspot.com/o/github%2Ff44.png?alt=media&token=3c907ac3-8775-4565-933b-cc0a22e1b99a)
 
 ### Bước 3: Thêm Firebase SDK
 ![Giao diện chính của Android Studio](https://firebasestorage.googleapis.com/v0/b/theryna-fd1d9.appspot.com/o/github%2Fadd.png?alt=media&token=0d959064-e697-40ba-b641-1157f79897bc)
+
 - Copy các mục được cung cấp và paste vào 2 tệp `build.gradle.kts`: Project và Module.
+
 ![Giao diện chính của Android Studio](https://firebasestorage.googleapis.com/v0/b/theryna-fd1d9.appspot.com/o/github%2Fad%C4%91.png?alt=media&token=56c9c9dc-6264-4f06-9235-203a7fdcfca8)
 
 ## 3. Tạo Cloud Firestore
@@ -83,12 +88,14 @@ Trước tiên, để kết nối Firestore với Android Studio, chúng ta cầ
 ### Bước 1: Tạo Cloud Firestore
 - Chọn mục "Build" và chọn "Firestore Database".
 - Nhấn vào "Create Database".
+
 ![Giao diện chính của Android Studio](https://firebasestorage.googleapis.com/v0/b/theryna-fd1d9.appspot.com/o/github%2Ff6.png?alt=media&token=b76af2a3-e449-46bf-a664-44f04135f85f)
 
 ## 4. Kiểm tra Quyền truy cập
 
 - Kiểm tra "Rules" để xem đã cấp quyền "Read" và "Write" chưa. 
 - Nếu cần thiết, thiết lập quyền truy cập.
+  
 ![Giao diện chính của Android Studio](https://firebasestorage.googleapis.com/v0/b/theryna-fd1d9.appspot.com/o/github%2Frules.png?alt=media&token=68c5bc41-1ea5-4354-bd8b-d156cbf43488)
 
 Vậy là, chúng ta đã kết nối Firestore với Android Studio thành công. Bây giờ chúng ta có thể thêm các collection và sử dụng nó trong ứng dụng của mình.
