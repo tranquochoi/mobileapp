@@ -39,66 +39,46 @@ Sau khi đã cài đặt thành công, bạn có thể bắt đầu tạo dự �
    - Cuối cùng, nhấn "Finish" để tạo dự án mới và bắt đầu làm việc.
 ![ạo dự án Android Studio](https://firebasestorage.googleapis.com/v0/b/theryna-fd1d9.appspot.com/o/github%2Fpic.png?alt=media&token=739e85da-42ba-4600-8146-95607dc15802)
 
+# Hướng dẫn Kết nối Firestore với Android Studio
 
-# Hướng dẫn chuyển từ Android Studio sang Firestore
+## 1. Tạo Dự án Firebase
 
-## Giới thiệu
+Trước tiên, để kết nối Firestore với Android Studio, bạn cần truy cập vào trang chủ của Firebase và thực hiện các bước sau:
 
-Firestore là một cơ sở dữ liệu NoSQL linh hoạt và mạnh mẽ của Google, được tích hợp tốt với các ứng dụng Android. Dưới đây là hướng dẫn cách chuyển từ môi trường phát triển Android Studio sang sử dụng Firestore để lưu trữ và quản lý dữ liệu của ứng dụng của bạn.
+### Bước 1: Tạo Dự án Firebase
+- Truy cập trang chủ của Firebase.
+- Chọn "Create a project" để tạo một dự án mới.
 
-## Thêm Firestore vào dự án Android
+### Bước 2: Thiết lập Dự án
+- Đặt tên cho dự án.
+- Chấp nhận điều khoản.
+- Chọn tài khoản Google Analytics.
 
-1. **Thêm Firestore SDK:**
-   - Mở file `build.gradle` (Module: app) của dự án Android Studio của bạn.
-   - Thêm dependencies cho Firestore:
-     ```gradle
-     implementation 'com.google.firebase:firebase-firestore:23.0.0'
-     ```
+### Bước 3: Tạo Dự án
+- Nhấn "Create project" để hoàn thành quá trình thiết lập.
 
-2. **Kích hoạt Firestore trong Firebase:**
-   - Truy cập vào [Firebase Console](https://console.firebase.google.com/).
-   - Chọn dự án của bạn hoặc tạo một dự án mới.
-   - Trong tab "Develop", chọn "Firestore Database".
-   - Nhấn nút "Create database" để tạo một cơ sở dữ liệu Firestore mới.
+## 2. Thêm Ứng dụng Android vào Dự án Firebase
 
-## Sử dụng Firestore trong ứng dụng của bạn
+### Bước 1: Đăng ký ứng dụng
+- Nhấn vào biểu tượng Android trên màn hình để thêm một "Android App".
+- Nhập gói ứng dụng Android.
 
-1. **Tạo, đọc, cập nhật và xóa dữ liệu:**
-   - Sử dụng API Firestore để thực hiện các thao tác CRUD (Tạo, Đọc, Cập nhật, Xóa) trên dữ liệu.
-   - Tham khảo [tài liệu Firestore](https://firebase.google.com/docs/firestore) để biết thêm chi tiết về cách sử dụng Firestore trong ứng dụng Android của bạn.
+### Bước 2: Tải xuống và thêm tệp cấu hình
+- Tải xuống tệp `google-services.json`.
+- Paste tệp vào thư mục "app" của dự án Android.
 
-2. **Xác thực người dùng:**
-   - Để bảo vệ dữ liệu của bạn, sử dụng Firebase Authentication để xác thực người dùng.
-   - Tham khảo [tài liệu Firebase Authentication](https://firebase.google.com/docs/auth) để biết thêm chi tiết về cách xác thực người dùng trong ứng dụng của bạn.
+### Bước 3: Thêm Firebase SDK
+- Copy các mục được cung cấp và paste vào 2 tệp `build.gradle.kts`: Project và Module.
 
-## Ví dụ về sử dụng Firestore trong Android
+## 3. Tạo Cloud Firestore
 
-Dưới đây là một ví dụ đơn giản về cách thêm dữ liệu vào Firestore trong ứng dụng Android của bạn:
+### Bước 1: Tạo Cloud Firestore
+- Chọn mục "Build" và chọn "Firestore Database".
+- Nhấn vào "Create Database".
 
-```java
-// Lấy tham chiếu tới Firestore
-FirebaseFirestore db = FirebaseFirestore.getInstance();
+## 4. Kiểm tra Quyền truy cập
 
-// Tạo một bản ghi mới
-Map<String, Object> data = new HashMap<>();
-data.put("name", "John Doe");
-data.put("age", 30);
+- Kiểm tra "Rules" để xem đã cấp quyền "Read" và "Write" chưa. 
+- Nếu cần thiết, thiết lập quyền truy cập.
 
-// Thêm bản ghi vào Firestore
-db.collection("users").document("user1").set(data)
-        .addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
-                // Xử lý thành công, ví dụ: hiển thị thông báo
-                Toast.makeText(MainActivity.this, "Dữ liệu đã được thêm vào Firestore!", Toast.LENGTH_SHORT).show();
-            }
-        })
-        .addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.w(TAG, "Error adding document", e);
-                // Xử lý lỗi, ví dụ: hiển thị thông báo lỗi
-                Toast.makeText(MainActivity.this, "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+Chúc mừng! Bạn đã kết nối Firestore với Android Studio thành công. Bây giờ bạn có thể thêm các collection và sử dụng nó trong ứng dụng của mình.
