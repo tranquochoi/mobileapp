@@ -38,6 +38,7 @@ fun HomeScreen(navController: NavController) {
     var testList by remember { mutableStateOf(emptyList<String>()) }
     var grammarList by remember { mutableStateOf(emptyList<String>()) } // Danh sách ngữ pháp
     var vocabularyList by remember { mutableStateOf(emptyList<String>()) } // Danh sách từ vựng
+    var kaiwaList by remember { mutableStateOf(emptyList<String>()) }
 
     LaunchedEffect(true) {
         mojiList = firestoreRepository.getHomeCollections()
@@ -45,6 +46,7 @@ fun HomeScreen(navController: NavController) {
         testList = firestoreRepository.getHomeTestCollections()
         grammarList = firestoreRepository.getGrammarCollections() // Lấy danh sách ngữ pháp
         vocabularyList = firestoreRepository.getVocabularyCollections() // Lấy danh sách từ vựng
+        kaiwaList = firestoreRepository.getKaiwaCollections()
 
     }
     Box(
@@ -88,6 +90,8 @@ fun HomeScreen(navController: NavController) {
 
                     SectionTitle("Luyện tập")
                     TestSection(testList, navController)
+                    KaiwaSection(kaiwaList, navController)
+
                 }
             }
         }
@@ -299,6 +303,53 @@ fun VocabularySection(vocabularyList: List<String>, navController: NavController
             }
         }
     }
+}
+@Composable
+fun KaiwaSection(kaiwaList: List<String>, navController: NavController) {
+    var kaiwaList by remember { mutableStateOf(emptyList<String>()) }
+
+    LaunchedEffect(true) {
+        kaiwaList = firestoreRepository.getKaiwaCollections()
+    }
+
+    Column {
+        kaiwaList.forEach { kaiwa ->
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp)
+                    .clickable {
+                        navigateToKaiwaDetailScreen(navController, kaiwa)
+                    },
+                shape = MaterialTheme.shapes.medium,
+                backgroundColor = Color(0xFF1A1A1A) // Màu đen nhạt vừa phải
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(8.dp)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.nhkk),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(CircleShape)
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Text(
+                        text = "Học giao tiếp qua video cùng NHK",
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White.copy(alpha = 0.8f), // Màu đen nhạt
+                        onTextLayout = {} // Provide an empty lambda
+                    )
+                }
+            }
+        }
+    }
+}
+
+private fun navigateToKaiwaDetailScreen(navController: NavController, kaiwa: String) {
+    navController.navigate("kaiwa_detail/$kaiwa")
 }
 
 private fun navigateToDetailScreen(navController: NavController, moji: String) {

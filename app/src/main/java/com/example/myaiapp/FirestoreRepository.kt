@@ -158,5 +158,22 @@ class FirestoreRepository {
             emptyList()
         }
     }
+    suspend fun getKaiwaCollections(): List<String> {
+        return try {
+            val querySnapshot = db.collection("kaiwa").get().await()
+            querySnapshot.documents.mapNotNull { it.id }
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
 
+    suspend fun getKaiwaDocuments(kaiwaName: String, collectionName: String): List<DocumentSnapshot> {
+        return try {
+            val querySnapshot = db.collection("kaiwa").document(kaiwaName)
+                .collection(collectionName).get().await()
+            querySnapshot.documents
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
 }
