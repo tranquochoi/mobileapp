@@ -39,7 +39,6 @@ Sau khi đã cài đặt thành công, bạn có thể bắt đầu tạo dự �
    - Cuối cùng, nhấn "Finish" để tạo dự án mới và bắt đầu làm việc.
 ![ạo dự án Android Studio](https://firebasestorage.googleapis.com/v0/b/theryna-fd1d9.appspot.com/o/github%2Fpic.png?alt=media&token=739e85da-42ba-4600-8146-95607dc15802)
 
-## [Chuyển đến trang Firestore](#firestore)
 
 # Hướng dẫn chuyển từ Android Studio sang Firestore
 
