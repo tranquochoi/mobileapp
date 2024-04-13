@@ -40,8 +40,8 @@ Sau khi đã cài đặt thành công, bạn có thể bắt đầu tạo dự �
 ![ạo dự án Android Studio](https://firebasestorage.googleapis.com/v0/b/theryna-fd1d9.appspot.com/o/github%2Fpic.png?alt=media&token=739e85da-42ba-4600-8146-95607dc15802)
 
 # Hướng dẫn Kết nối Firestore với Android Studio
-
-Firestore là một cơ sở dữ liệu NoSQL theo tài liệu dựa trên tài liệu của Google. Nó được thiết kế để lưu trữ và đồng bộ dữ liệu của ứng dụng của bạn trên nhiều thiết bị và cung cấp tích hợp dễ dàng với các dịch vụ Firebase khác. Để biết thêm thông tin về Firestore, bạn có thể truy cập  của Google.
+## Giới thiệu
+Firestore, là một dịch vụ cơ sở dữ liệu đám mây của Google, là một giải pháp đa nền tảng và thời gian thực cho việc quản lý và đồng bộ dữ liệu trong ứng dụng di động và website. Được phát triển dựa trên cơ sở hạ tầng mạnh mẽ của Google Cloud, Firestore không chỉ là một cơ sở dữ liệu thông thường mà còn mang lại nhiều tính năng và lợi ích mạnh mẽ.
 
 ## 1. Tạo Dự án Firebase
 
