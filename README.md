@@ -100,3 +100,8 @@ Trước tiên, để kết nối Firestore với Android Studio, chúng ta cầ
 
 Vậy là, chúng ta đã kết nối Firestore với Android Studio thành công. Bây giờ chúng ta có thể thêm các collection và sử dụng nó trong ứng dụng của mình.
 
+# Tài liệu tham khảo
+## 1. Firebase [truy cập](https://firebase.google.com/).
+## 2. Android Studio [truy cập](https://developer.android.com/studio).
+
+
