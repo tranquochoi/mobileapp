@@ -50,14 +50,14 @@ Trước tiên, để kết nối Firestore với Android Studio, bạn cần tr
 ### Bước 1: Tạo Dự án Firebase
 - Truy cập trang chủ của Firebase.
 - Chọn "Create a project" để tạo một dự án mới.
-![Giao diện chính của Android Studio](https://firebasestorage.googleapis.com/v0/b/theryna-fd1d9.appspot.com/o/github%2Fpic.png?alt=media&token=739e85da-42ba-4600-8146-95607dc15802)
+![Giao diện chính của Android Studio](https://firebasestorage.googleapis.com/v0/b/theryna-fd1d9.appspot.com/o/github%2Ff1.png?alt=media&token=b45abe9c-9c4d-4ae7-a550-72c255447123)
 
 ### Bước 2: Thiết lập Dự án
 - Đặt tên cho dự án.
 - Chấp nhận điều khoản.
 - Chọn tài khoản Google Analytics.
 
-### Bước 3: Tạo Dự án
+### Bước 3: Tạo Dự án mới
 - Nhấn "Create project" để hoàn thành quá trình thiết lập.
 ![Giao diện chính của Android Studio](https://firebasestorage.googleapis.com/v0/b/theryna-fd1d9.appspot.com/o/github%2Ff2.png?alt=media&token=1ec38313-9b08-4573-b83e-7a31c9a19e7a)
 
