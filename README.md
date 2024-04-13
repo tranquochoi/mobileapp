@@ -28,9 +28,9 @@ Sau khi đã cài đặt thành công, bạn có thể bắt đầu tạo dự �
 ![Giao diện chính của Android Studio](https://firebasestorage.googleapis.com/v0/b/theryna-fd1d9.appspot.com/o/github%2Fgdc.png?alt=media&token=c09e20af-0e9d-413c-a800-d91caa91bd4f)
 2. **Tạo dự án mới:**
    - Trong giao diện chính của Android Studio, nhấn vào "New Project" để bắt đầu tạo dự án mới.
-
 3. **Chọn loại Activity:**
    - Chọn loại Activity phù hợp với dự án của bạn. Ví dụ, bạn có thể chọn "Empty Activity" để bắt đầu với một dự án trống.
+![ạo dự án Android Studio](https://firebasestorage.googleapis.com/v0/b/theryna-fd1d9.appspot.com/o/github%2Fas.png?alt=media&token=226a8707-05cd-4b2e-8315-1f350758fa4b)
 
 4. **Thiết lập cài đặt dự án:**
    - Đặt tên cho dự án trong phần "Name".
