@@ -25,7 +25,7 @@ Sau khi đã cài đặt thành công, bạn có thể bắt đầu tạo dự �
 
 1. **Mở Android Studio:**
    - Mở Android Studio sau khi đã cài đặt thành công.
-
+![Giao diện chính của Android Studio](C:\Users\Admin\OneDrive\Pictures\ành)
 2. **Tạo dự án mới:**
    - Trong giao diện chính của Android Studio, nhấn vào "New Project" để bắt đầu tạo dự án mới.
 
