@@ -11,20 +11,20 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Tab
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,7 +51,6 @@ import com.google.firebase.ktx.Firebase
 
 val db = Firebase.firestore
 
-@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun DetailKanjiScreen(navController: NavController, homeKanjiName: String?) {
@@ -70,30 +69,31 @@ fun DetailKanjiScreen(navController: NavController, homeKanjiName: String?) {
     var selectedTabIndex by remember { mutableStateOf(0) }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(8.dp)
+        modifier = Modifier.fillMaxSize()
     ) {
         // TopAppBar with back button
         TopAppBar(
             title = {
-                Text(text = "Bảng chữ cái Kanji",    onTextLayout = {}, // hoặc null nếu không cần
+                Text(
+                    text = "Bảng chữ cái Kanji",
+                    color = Color.White, // Set text color to whit
+                    style = MaterialTheme.typography.subtitle1 // Apply smaller font size
+// e
                 )
             },
             navigationIcon = {
                 IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                    Icon(Icons.Filled.ArrowBack, contentDescription = "Back", tint = Color.White) // Set icon color to white
                 }
             },
+            backgroundColor = Color.Black, // Set background color to black
             modifier = Modifier.fillMaxWidth()
         )
 
         // TabRow with two tabs
         TabRow(
             selectedTabIndex = selectedTabIndex,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
+            modifier = Modifier.fillMaxWidth(),
             indicator = { tabPositions ->
                 TabRowDefaults.Indicator(
                     modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]),
@@ -104,14 +104,12 @@ fun DetailKanjiScreen(navController: NavController, homeKanjiName: String?) {
             Tab(
                 selected = selectedTabIndex == 0,
                 onClick = { selectedTabIndex = 0 },
-                text = { Text("Cơ bản", color = Color.Black,    onTextLayout = {}, // hoặc null nếu không cần
-                ) }
+                text = { Text("Cơ bản", color = Color.Black) }
             )
             Tab(
                 selected = selectedTabIndex == 1,
                 onClick = { selectedTabIndex = 1 },
-                text = { Text("Nâng cao", color = Color.Black,    onTextLayout = {}, // hoặc null nếu không cần
-                ) }
+                text = { Text("Nâng cao", color = Color.Black) }
             )
         }
 
@@ -122,6 +120,7 @@ fun DetailKanjiScreen(navController: NavController, homeKanjiName: String?) {
         }
     }
 }
+
 
 @Composable
 fun KanjiGrid(kanjiDocuments: List<DocumentSnapshot>) {
