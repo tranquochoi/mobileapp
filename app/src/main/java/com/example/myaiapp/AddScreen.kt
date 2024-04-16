@@ -1,6 +1,7 @@
 package com.example.myaiapp
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -69,17 +71,21 @@ fun AddScreen(navController: NavController, firestoreRepository: FirestoreReposi
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "Ghi chú")
+                    Text(text = "Ghi chú",
+                        style = androidx.compose.material3.MaterialTheme.typography.titleSmall,
+                        color = Color.White)
                 },
                 navigationIcon = {
                     IconButton(onClick = { menuExpanded = !menuExpanded }) {
-                        Icon(Icons.Default.Menu, contentDescription = "Menu")
+                        Icon(Icons.Default.Menu, contentDescription = "Menu", tint = Color.White )
                     }
                 },
+                modifier = Modifier.fillMaxWidth(),
+                backgroundColor = Color.Black, // Set background color to black
                 actions = {
                     if (isDeleteVisible) {
                         IconButton(onClick = { showDeleteConfirmation = true }) {
-                            Icon(Icons.Default.Delete, contentDescription = "Delete")
+                            Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color.Red)
                         }
                     }
                 }
@@ -90,10 +96,14 @@ fun AddScreen(navController: NavController, firestoreRepository: FirestoreReposi
                 onClick = {
                     navController.navigate("addNote")
                 },
-                modifier = Modifier
-                    .padding(bottom = 8.dp)
+                modifier = Modifier.padding(bottom = 8.dp),
+                backgroundColor = Color.Black // Đặt màu đen cho nút
             ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Add Note")
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add Note",
+                    tint = Color.White
+                )
             }
         },
         content = { innerPadding ->
