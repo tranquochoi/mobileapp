@@ -1,23 +1,33 @@
-// AddScreen.kt
 package com.example.myaiapp
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
+import androidx.compose.material.Checkbox
+import androidx.compose.material.Divider
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.material.TextField
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Menu
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -29,29 +39,51 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.google.firebase.Timestamp
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
-
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun AddScreen(navController: NavController, firestoreRepository: FirestoreRepository) {
     var notes by remember { mutableStateOf<List<Note>>(emptyList()) }
+    var menuExpanded by remember { mutableStateOf(false) } // Trạng thái của menu mở rộng hay thu gọn
+    var showCheckboxes by remember { mutableStateOf(false) } // Trạng thái của checkbox hiển thị hay ẩn
+    var checkedStates by remember { mutableStateOf<List<Boolean>>(emptyList()) } // Trạng thái của checkbox
+    var isDeleteVisible by remember { mutableStateOf(false) } // Trạng thái của nút xóa
+    var showDeleteConfirmation by remember { mutableStateOf(false) } // Trạng thái của hộp thoại xác nhận xóa
+    var showDeleteSuccessDialog by remember { mutableStateOf(false) }
 
     // Use LaunchedEffect to launch a coroutine and fetch data asynchronously
     LaunchedEffect(Unit) {
         // Inside LaunchedEffect, you can call suspend functions
-        notes = firestoreRepository.getAddCollection()
+        notes = firestoreRepository.getAddCollection().reversed() // Sắp xếp danh sách ngược lại
+        checkedStates = MutableList(notes.size) { false } // Khởi tạo trạng thái của checkbox
     }
 
     Scaffold(
         topBar = {
-            // TopAppBar content, if any
+            TopAppBar(
+                title = {
+                    Text(text = "Ghi chú")
+                },
+                navigationIcon = {
+                    IconButton(onClick = { menuExpanded = !menuExpanded }) {
+                        Icon(Icons.Default.Menu, contentDescription = "Menu")
+                    }
+                },
+                actions = {
+                    if (isDeleteVisible) {
+                        IconButton(onClick = { showDeleteConfirmation = true }) {
+                            Icon(Icons.Default.Delete, contentDescription = "Delete")
+                        }
+                    }
+                }
+            )
         },
         floatingActionButton = {
             FloatingActionButton(
@@ -63,41 +95,172 @@ fun AddScreen(navController: NavController, firestoreRepository: FirestoreReposi
             ) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = "Add Note")
             }
-        }
-    ) {
-        LazyColumn {
-            items(notes) { note ->
-                NoteItem(note = note, onItemClick = {
-                    navController.navigate("detailAdd/${note.title}")
-                })
-                Divider(modifier = Modifier.padding(vertical = 8.dp))
+        },
+        content = { innerPadding ->
+            Column(modifier = Modifier.padding(innerPadding)) {
+                Row {
+                    if (menuExpanded) {
+                        DropdownMenu(
+                            expanded = menuExpanded,
+                            onDismissRequest = { menuExpanded = false }
+                        ) {
+                            DropdownMenuItem(onClick = {
+                                // Xử lý sự kiện khi lựa chọn
+                                menuExpanded = false
+                                showCheckboxes = true // Hiển thị checkbox khi chọn từ menu
+                            }) {
+                                Text(text = "Chọn")
+                            }
+                            // Thêm các lựa chọn khác nếu cần
+                        }
+                    }
+                }
+
+                LazyColumn(
+                    modifier = Modifier.padding(top = 8.dp) // Khoảng cách giữa topAppBar và nội dung phía dưới
+                ) {
+                    itemsIndexed(notes) { index, note ->
+                        NoteItem(
+                            note = note,
+                            onItemClick = {
+                                navController.navigate("detailAdd/${note.title}")
+                            },
+                            isChecked = checkedStates.getOrElse(index) { false },
+                            onCheckedChange = { isChecked ->
+                                checkedStates = checkedStates.toMutableList().also {
+                                    it[index] = isChecked
+                                }
+                                isDeleteVisible = checkedStates.any { it } // Hiển thị nút xóa khi có ít nhất một checkbox được tích
+                            },
+                            showCheckboxes = showCheckboxes
+                        )
+                        Divider(modifier = Modifier.padding(vertical = 8.dp))
+                    }
+                }
+                val coroutineScope = rememberCoroutineScope()
+
+                if (showDeleteConfirmation) {
+                    DeleteConfirmationDialog(
+                        onDeleteConfirmed = {
+                            coroutineScope.launch {
+                                // Xóa ghi chú từ Firestore
+                                firestoreRepository.deleteNoteFromCollection("add", notes.filterIndexed { index, _ -> checkedStates[index] })
+                                showDeleteConfirmation = false
+
+                                // Cập nhật lại danh sách ghi chú sau khi xóa
+                                notes = firestoreRepository.getAddCollection().reversed()
+
+                                // Reset trạng thái của checkbox
+                                checkedStates = MutableList(notes.size) { false }
+
+                                showCheckboxes = false
+
+                                showDeleteSuccessDialog = true
+
+                                // Ẩn nút xóa sau khi đã xóa
+                                isDeleteVisible = false
+                            }
+                        },
+                        onDismiss = { showDeleteConfirmation = false }
+                    )
+                }
+                if (showDeleteSuccessDialog) {
+                    AutoDismissDialog(onDismiss = { showDeleteSuccessDialog = false })
+                }
+
             }
         }
-    }
+    )
 }
 @Composable
-fun NoteItem(note: Note, onItemClick: () -> Unit) {
+fun AutoDismissDialog(
+    onDismiss: () -> Unit
+) {
+    LaunchedEffect(true) {
+        delay(2000) // Thời gian hiển thị thông báo (2 giây)
+        onDismiss()
+    }
+
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        text = { Text("Bạn đã xóa ghi chú thành công.") },
+        buttons = {}
+    )
+}
+
+
+@Composable
+fun NoteItem(
+    note: Note,
+    onItemClick: () -> Unit,
+    isChecked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    showCheckboxes: Boolean
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
             .clickable { onItemClick() } // Handle click event
     ) {
-        Text(text = "${note.title}", fontWeight = FontWeight.Bold, fontSize = 28.sp,     onTextLayout = {}, // hoặc null nếu không cần
-        )
-        Text(text = "${note.content}",     onTextLayout = {}, // hoặc null nếu không cần
-        )
-        Text(text = "${formatTimestamp(note.timestamp)}",     onTextLayout = {}, // hoặc null nếu không cần
-        )
+        Row {
+            if (showCheckboxes) {
+                Checkbox(
+                    checked = isChecked,
+                    onCheckedChange = { onCheckedChange(it) },
+                    modifier = Modifier.padding(end = 8.dp) // Khoảng cách giữa checkbox và nội dung
+                )
+            }
+            Column {
+                Text(
+                    text = note.title,
+                    style = MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Bold) // Chữ to và in đậm
+                )
+                Text(
+                    text = note.content
+                )
+                Text(
+                    text = formatTimestamp(note.timestamp),
+                    style = MaterialTheme.typography.body2.copy(fontStyle = FontStyle.Italic) // Chữ nghiêng
+                )
+            }
+
+        }
     }
 }
 
-
-private fun formatTimestamp(timestamp: Date?): String {
-    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-    dateFormat.timeZone = TimeZone.getTimeZone("Asia/Ho_Chi_Minh")
-    return timestamp?.let { dateFormat.format(it) } ?: "N/A"
+@Composable
+fun DeleteConfirmationDialog(
+    onDeleteConfirmed: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("THÔNG BÁO") },
+        text = { Text("Bạn có chắc chắn muốn xóa ghi chú này không?") },
+        confirmButton = {
+            Button(
+                onClick = {
+                    onDeleteConfirmed()
+                    onDismiss()
+                }
+            ) {
+                Text("Xóa")
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text("Hủy bỏ")
+            }
+        }
+    )
 }
+private fun formatTimestamp(timestamp: Timestamp?): String {
+    val dateFormat = SimpleDateFormat("yyyy/MM/dd - HH:mm:ss", Locale.getDefault())
+    dateFormat.timeZone = TimeZone.getTimeZone("Asia/Ho_Chi_Minh")
+    return timestamp?.toDate()?.let { dateFormat.format(it) } ?: "N/A"
+}
+
 @Composable
 fun AddNoteScreen(navController: NavController, firestoreRepository: FirestoreRepository) {
     var title by remember { mutableStateOf("") }
@@ -114,8 +277,7 @@ fun AddNoteScreen(navController: NavController, firestoreRepository: FirestoreRe
         TextField(
             value = title,
             onValueChange = { title = it },
-            label = { Text("Title",     onTextLayout = {}, // hoặc null nếu không cần
-            ) },
+            label = { Text("Title") },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 8.dp)
@@ -124,8 +286,7 @@ fun AddNoteScreen(navController: NavController, firestoreRepository: FirestoreRe
         TextField(
             value = content,
             onValueChange = { content = it },
-            label = { Text("Content",    onTextLayout = {}, // hoặc null nếu không cần
-            ) },
+            label = { Text("Content") },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 8.dp)
@@ -138,7 +299,7 @@ fun AddNoteScreen(navController: NavController, firestoreRepository: FirestoreRe
                     val newNote = Note(
                         title = title,
                         content = content,
-                        timestamp = Date()
+                        timestamp = Timestamp.now() // Sử dụng Timestamp.now() để lấy thời gian hiện tại
                     )
                     firestoreRepository.addNoteToCollection("add", newNote)
                     // Clear input fields
@@ -152,24 +313,7 @@ fun AddNoteScreen(navController: NavController, firestoreRepository: FirestoreRe
                 .fillMaxWidth()
                 .padding(top = 16.dp)
         ) {
-            Text("Add Note",    onTextLayout = {}, // hoặc null nếu không cần
-            )
+            Text("Add Note")
         }
-    }
-}
-// DetailScreen.kt
-@Composable
-fun DetailAddScreen(note: Note) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Text(text = "${note.title}", fontSize = 20.sp, fontWeight = FontWeight.Bold,    onTextLayout = {}, // hoặc null nếu không cần
-        )
-        Text(text = "${note.content}", fontSize = 16.sp,    onTextLayout = {}, // hoặc null nếu không cần
-        )
-        Text(text = "${formatTimestamp(note.timestamp)}", fontSize = 14.sp, fontStyle = FontStyle.Italic,    onTextLayout = {}, // hoặc null nếu không cần
-        )
     }
 }

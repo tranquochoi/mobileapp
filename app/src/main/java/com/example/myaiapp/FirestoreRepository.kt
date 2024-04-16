@@ -4,7 +4,6 @@ package com.example.myaiapp
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
-import java.util.Date
 
 
 class FirestoreRepository {
@@ -104,22 +103,48 @@ class FirestoreRepository {
                 val content = documentSnapshot.getString("content") ?: ""
                 val timestamp = documentSnapshot.getTimestamp("timestamp")
 
-                Note(title, content, Date())
+                Note(title, content, timestamp) // Không cần tạo thời gian mới từ Firestore Timestamp
             }
         } catch (e: Exception) {
             emptyList()
         }
     }
+    suspend fun deleteNoteFromCollection(collectionName: String, notes: List<Note>) {
+        try {
+            // Lặp qua từng ghi chú trong danh sách
+            notes.forEach { note ->
+                // Tìm tài liệu cần xóa dựa trên title và content của ghi chú
+                val querySnapshot = db.collection(collectionName)
+                    .whereEqualTo("title", note.title)
+                    .whereEqualTo("content", note.content)
+                    .get().await()
+
+                // Xóa tài liệu nếu tìm thấy
+                querySnapshot.documents.forEach { document ->
+                    document.reference.delete().await()
+                }
+            }
+        } catch (e: Exception) {
+            // Xử lý ngoại lệ, ví dụ: ghi log hoặc thông báo cho người dùng
+        }
+    }
+
 
     suspend fun addNoteToCollection(collectionName: String, note: Note) {
         try {
-            db.collection(collectionName).document()
+            val newDocumentId = generateCustomDocumentId(collectionName) // Tạo mã ID tùy chỉnh
+            db.collection(collectionName).document(newDocumentId)
                 .set(note).await()
         } catch (e: Exception) {
             // Handle exception, e.g., log or notify user
         }
     }
-
+    private suspend fun generateCustomDocumentId(collectionName: String): String {
+        val querySnapshot = db.collection(collectionName).get().await()
+        val count = querySnapshot.size()
+        val formattedCount = String.format("%04d", count + 1) // Tăng count lên 1 để tạo mã ID tiếp theo
+        return formattedCount
+    }
     suspend fun getGrammarCollections(): List<String> {
         return try {
             val querySnapshot = db.collection("grammar").get().await()
