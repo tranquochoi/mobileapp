@@ -2,6 +2,7 @@ package com.example.myaiapp
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Checkbox
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
@@ -20,12 +22,16 @@ import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Menu
 
@@ -38,9 +44,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.firebase.Timestamp
 import kotlinx.coroutines.delay
@@ -59,6 +68,7 @@ fun AddScreen(navController: NavController, firestoreRepository: FirestoreReposi
     var isDeleteVisible by remember { mutableStateOf(false) } // Trạng thái của nút xóa
     var showDeleteConfirmation by remember { mutableStateOf(false) } // Trạng thái của hộp thoại xác nhận xóa
     var showDeleteSuccessDialog by remember { mutableStateOf(false) }
+    var showClearSelection by remember { mutableStateOf(false) } // Trạng thái của chữ "Bỏ chọn" trên TopAppBar
 
     // Use LaunchedEffect to launch a coroutine and fetch data asynchronously
     LaunchedEffect(Unit) {
@@ -71,13 +81,15 @@ fun AddScreen(navController: NavController, firestoreRepository: FirestoreReposi
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "Ghi chú",
+                    Text(
+                        text = "Ghi chú",
                         style = androidx.compose.material3.MaterialTheme.typography.titleSmall,
-                        color = Color.White)
+                        color = Color.White
+                    )
                 },
                 navigationIcon = {
                     IconButton(onClick = { menuExpanded = !menuExpanded }) {
-                        Icon(Icons.Default.Menu, contentDescription = "Menu", tint = Color.White )
+                        Icon(Icons.Default.Menu, contentDescription = "Menu", tint = Color.White)
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
@@ -88,6 +100,23 @@ fun AddScreen(navController: NavController, firestoreRepository: FirestoreReposi
                             Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color.Red)
                         }
                     }
+                    if (showClearSelection) {
+                        Text(
+                            text = "Bỏ chọn",
+                            color = Color.White,
+                            modifier = Modifier
+                                .clickable {
+                                    // Clear all checkbox selections
+                                    checkedStates = List(checkedStates.size) { false }
+                                    showClearSelection = false
+                                    // Reset other states as needed
+                                    isDeleteVisible = false // Ẩn nút xóa
+                                    showCheckboxes = false // Ẩn checkbox
+                                }
+                                .padding(horizontal = 8.dp)
+                        )
+                    }
+
                 }
             )
         },
@@ -141,6 +170,7 @@ fun AddScreen(navController: NavController, firestoreRepository: FirestoreReposi
                                     it[index] = isChecked
                                 }
                                 isDeleteVisible = checkedStates.any { it } // Hiển thị nút xóa khi có ít nhất một checkbox được tích
+                                showClearSelection = checkedStates.any { it } // Hiển thị chữ "Bỏ chọn" nếu có ít nhất một checkbox được tích
                             },
                             showCheckboxes = showCheckboxes
                         )
@@ -164,6 +194,7 @@ fun AddScreen(navController: NavController, firestoreRepository: FirestoreReposi
                                 checkedStates = MutableList(notes.size) { false }
 
                                 showCheckboxes = false
+                                showClearSelection = false
 
                                 showDeleteSuccessDialog = true
 
@@ -182,6 +213,7 @@ fun AddScreen(navController: NavController, firestoreRepository: FirestoreReposi
         }
     )
 }
+
 @Composable
 fun AutoDismissDialog(
     onDismiss: () -> Unit
@@ -253,13 +285,16 @@ fun DeleteConfirmationDialog(
                 onClick = {
                     onDeleteConfirmed()
                     onDismiss()
-                }
+                },
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Red) // Màu viền đỏ cho nút xóa
             ) {
                 Text("Xóa")
             }
         },
         dismissButton = {
-            Button(onClick = onDismiss) {
+            Button(onClick = onDismiss,
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Black) // Màu viền đen cho nút hủy bỏ
+            ) {
                 Text("Hủy bỏ")
             }
         }
@@ -271,6 +306,7 @@ private fun formatTimestamp(timestamp: Timestamp?): String {
     return timestamp?.toDate()?.let { dateFormat.format(it) } ?: "N/A"
 }
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun AddNoteScreen(navController: NavController, firestoreRepository: FirestoreRepository) {
     var title by remember { mutableStateOf("") }
@@ -278,52 +314,65 @@ fun AddNoteScreen(navController: NavController, firestoreRepository: FirestoreRe
 
     val coroutineScope = rememberCoroutineScope()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Add Note", style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold)) }, // Thiết lập fontSize và fontWeight
+                navigationIcon = {
+                    IconButton(onClick = {
+                        coroutineScope.launch {
+                            val newNote = Note(
+                                title = title,
+                                content = content,
+                                timestamp = Timestamp.now() // Use Timestamp.now() to get the current time
+                            )
+                            firestoreRepository.addNoteToCollection("add", newNote)
+                            // Clear input fields
+                            title = ""
+                            content = ""
+                            // Navigate back to the previous screen
+                            navController.popBackStack()
+                        }}) {
+                        Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                backgroundColor = Color.White, // Set background color to black
+                elevation = 0.dp // Remove the elevation to eliminate the shadow
+            )
+        }
     ) {
-        // Input fields for adding a new note
-        TextField(
-            value = title,
-            onValueChange = { title = it },
-            label = { Text("Title") },
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp)
-        )
-
-        TextField(
-            value = content,
-            onValueChange = { content = it },
-            label = { Text("Content") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp)
-        )
-
-        // Button to add a new note
-        Button(
-            onClick = {
-                coroutineScope.launch {
-                    val newNote = Note(
-                        title = title,
-                        content = content,
-                        timestamp = Timestamp.now() // Sử dụng Timestamp.now() để lấy thời gian hiện tại
-                    )
-                    firestoreRepository.addNoteToCollection("add", newNote)
-                    // Clear input fields
-                    title = ""
-                    content = ""
-                    // Navigate back to the previous screen
-                    navController.popBackStack()
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp)
+                .fillMaxSize()
+                .padding(8.dp)
         ) {
-            Text("Add Note")
+            TextField(
+                value = title,
+                onValueChange = { title = it },
+                placeholder = { Text("Tiêu đề", style = TextStyle(fontSize = 23.sp, fontWeight = FontWeight.Bold)) }, // Thiết lập fontSize và fontWeight
+                singleLine = true,
+                textStyle = TextStyle(fontSize = 23.sp, fontWeight = FontWeight.Bold), // Thiết lập fontSize và fontWeight
+                colors = TextFieldDefaults.textFieldColors(
+                    backgroundColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent
+                )
+
+            )
+
+            TextField(
+                value = content,
+                onValueChange = { content = it },
+                placeholder = { Text("Ghi chú") }, // Thiết lập fontSize và fontWeight
+                textStyle = TextStyle(fontSize = 16.sp), // Thiết lập fontSize và fontWeight
+                colors = TextFieldDefaults.textFieldColors(
+                    backgroundColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent
+                ),
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }
