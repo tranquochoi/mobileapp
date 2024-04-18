@@ -1,5 +1,6 @@
 package com.example.myapp
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
@@ -18,6 +19,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,12 +30,14 @@ import androidx.navigation.compose.rememberNavController
 import com.example.myaiapp.AddNoteScreen
 import com.example.myaiapp.AddScreen
 import com.example.myaiapp.DetailKanjiScreen
+import com.example.myaiapp.DetailNoteScreen
 import com.example.myaiapp.DetailScreen
 import com.example.myaiapp.DetailTestScreen
 import com.example.myaiapp.Favorite
 import com.example.myaiapp.FirestoreRepository
 import com.example.myaiapp.GrammarScreen
 import com.example.myaiapp.KaiwaScreen
+import com.example.myaiapp.Note
 import com.example.myaiapp.SearchScreen
 import com.example.myaiapp.Settings
 import com.google.firebase.database.DatabaseReference
@@ -44,6 +48,7 @@ val databaseReference: DatabaseReference = firebaseDatabase.reference
 
 val firestoreRepository = FirestoreRepository()
 
+@SuppressLint("UnsafeOptInUsageError")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyApp() {
@@ -152,6 +157,7 @@ fun MyApp() {
             composable("addNote") {
                 AddNoteScreen(navController, firestoreRepository = FirestoreRepository())
             }
+
             composable("detailAdd/{title}") { backStackEntry ->
                 val title = backStackEntry.arguments?.getString("title")
 
@@ -180,6 +186,7 @@ fun MyApp() {
                     VocabularyScreen(navController, name)
                 }
             }
+
             composable("kaiwa_detail/{kaiwa}") { backStackEntry ->
                 val kaiwa = backStackEntry.arguments?.getString("kaiwa")
                 kaiwa?.let { name ->
@@ -190,4 +197,3 @@ fun MyApp() {
         }
     }
 }
-

@@ -6,8 +6,10 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -172,7 +174,7 @@ fun AddScreen(navController: NavController, firestoreRepository: FirestoreReposi
                                 isDeleteVisible = checkedStates.any { it } // Hiển thị nút xóa khi có ít nhất một checkbox được tích
                                 showClearSelection = checkedStates.any { it } // Hiển thị chữ "Bỏ chọn" nếu có ít nhất một checkbox được tích
                             },
-                            showCheckboxes = showCheckboxes
+                            showCheckboxes = showCheckboxes,
                         )
                         Divider(modifier = Modifier.padding(vertical = 8.dp))
                     }
@@ -237,13 +239,15 @@ fun NoteItem(
     onItemClick: () -> Unit,
     isChecked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
-    showCheckboxes: Boolean
+    showCheckboxes: Boolean,
+
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .clickable { onItemClick() } // Handle click event
+            .clickable { onItemClick()
+            } // Handle click event
     ) {
         Row {
             if (showCheckboxes) {
@@ -317,22 +321,26 @@ fun AddNoteScreen(navController: NavController, firestoreRepository: FirestoreRe
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Add Note", style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold)) }, // Thiết lập fontSize và fontWeight
+                title = { }, // Không hiển thị tiêu đề
                 navigationIcon = {
                     IconButton(onClick = {
                         coroutineScope.launch {
-                            val newNote = Note(
-                                title = title,
-                                content = content,
-                                timestamp = Timestamp.now() // Use Timestamp.now() to get the current time
-                            )
-                            firestoreRepository.addNoteToCollection("add", newNote)
+                            // Kiểm tra nếu cả tiêu đề và nội dung đều không rỗng
+                            if (title.isNotBlank() && content.isNotBlank()) {
+                                val newNote = Note(
+                                    title = title,
+                                    content = content,
+                                    timestamp = Timestamp.now() // Use Timestamp.now() to get the current time
+                                )
+                                firestoreRepository.addNoteToCollection("add", newNote)
+                            }
                             // Clear input fields
                             title = ""
                             content = ""
                             // Navigate back to the previous screen
                             navController.popBackStack()
-                        }}) {
+                        }
+                    }) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
@@ -376,3 +384,39 @@ fun AddNoteScreen(navController: NavController, firestoreRepository: FirestoreRe
         }
     }
 }
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@Composable
+fun DetailNoteScreen(navController: NavController, note: Note) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = note.title ?: "Chi tiết ghi chú",
+                        style = MaterialTheme.typography.subtitle1,
+                        color = Color.White
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                backgroundColor = Color.Black,
+                elevation = 0.dp
+            )
+        }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            Text(
+                text = note.content ?: "Nội dung ghi chú",
+                style = MaterialTheme.typography.body1
+            )
+        }
+    }
+}
+
