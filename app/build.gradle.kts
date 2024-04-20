@@ -56,6 +56,7 @@ android {
 dependencies {
     implementation ("org.jsoup:jsoup:1.14.3")
     implementation ("androidx.navigation:navigation-compose:2.4.0-alpha07")
+    implementation ("androidx.compose.animation:animation:1.2.0")
 
     implementation ("androidx.media3:media3-exoplayer:1.3.1") // Cho phát media sử dụng ExoPlayer
     implementation ("androidx.media3:media3-exoplayer-dash:1.3.1") // Hỗ trợ phát DASH với ExoPlayer
