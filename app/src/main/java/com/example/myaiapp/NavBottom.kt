@@ -1,5 +1,6 @@
 package com.example.myapp
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
@@ -18,32 +19,41 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.myaiapp.AddNoteScreen
 import com.example.myaiapp.AddScreen
+
 import com.example.myaiapp.DetailKanjiScreen
+import com.example.myaiapp.DetailNoteScreen
 import com.example.myaiapp.DetailScreen
 import com.example.myaiapp.DetailTestScreen
 import com.example.myaiapp.Favorite
 import com.example.myaiapp.FirestoreRepository
 import com.example.myaiapp.GrammarScreen
 import com.example.myaiapp.KaiwaScreen
+import com.example.myaiapp.Note
 import com.example.myaiapp.SearchScreen
 import com.example.myaiapp.Settings
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import kotlinx.coroutines.launch
 
 val firebaseDatabase = FirebaseDatabase.getInstance()
 val databaseReference: DatabaseReference = firebaseDatabase.reference
 
 val firestoreRepository = FirestoreRepository()
 
+@SuppressLint("UnsafeOptInUsageError")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyApp() {
@@ -127,7 +137,8 @@ fun MyApp() {
         NavHost(
             navController = navController,
             startDestination = "home",
-            modifier = Modifier.padding(innerPadding)
+                    modifier = Modifier.padding(innerPadding)
+
         ) {
             composable("home") { HomeScreen(navController) }
             composable("search") { SearchScreen() }
@@ -146,24 +157,75 @@ fun MyApp() {
                 DetailTestScreen(navController,test)
             }
             composable("add") { AddScreen(navController, firestoreRepository) }
+
             composable("addScreen") {
                 AddScreen(navController, firestoreRepository = FirestoreRepository())
             }
             composable("addNote") {
                 AddNoteScreen(navController, firestoreRepository = FirestoreRepository())
             }
+
+
             composable("detailAdd/{title}") { backStackEntry ->
                 val title = backStackEntry.arguments?.getString("title")
 
-                // Use LaunchedEffect to launch a coroutine and fetch data asynchronously
-                LaunchedEffect(title) {
+                // State to store the list of notes
+                var notesState by remember { mutableStateOf<List<Note>>(emptyList()) }
+
+                // Use LaunchedEffect to call the suspend function
+                LaunchedEffect(Unit) {
+                    // Call the suspend function to fetch the list of notes from Firestore
                     val notes = firestoreRepository.getAddCollection()
-                    val note = notes.find { it.title == title }
-                    if (note != null) {
-                    } else {
-                        // Handle error or navigate back
-                        navController.popBackStack()
+                    // Store the list of notes in notesState
+                    notesState = notes
+                }
+
+                // Find the note with the corresponding title
+                val note = notesState.find { it.title == title }
+
+                // Check if the note is found
+                note?.let { note ->
+                    val coroutineScope = rememberCoroutineScope()
+                    val onSave: (Note) -> Unit = { updatedNote ->
+                        // Save the updated note to Firestore
+                        coroutineScope.launch {
+                            firestoreRepository.updateNoteInCollection("add", updatedNote)
+                        }
                     }
+
+                    // Navigate to the DetailNoteScreen and pass the onSave function
+                    DetailNoteScreen(navController, note, onSave)
+                }
+            }
+            composable("detailAdd/{id}") { backStackEntry ->
+                val id = backStackEntry.arguments?.getString("id")
+
+                // State to store the list of notes
+                var notesState by remember { mutableStateOf<List<Note>>(emptyList()) }
+
+                // Use LaunchedEffect to call the suspend function
+                LaunchedEffect(Unit) {
+                    // Call the suspend function to fetch the list of notes from Firestore
+                    val notes = firestoreRepository.getAddCollection()
+                    // Store the list of notes in notesState
+                    notesState = notes
+                }
+
+                // Find the note with the corresponding ID
+                val note = notesState.find { it.id == id }
+
+                // Check if the note is found
+                note?.let { note ->
+                    val coroutineScope = rememberCoroutineScope()
+                    val onSave: (Note) -> Unit = { updatedNote ->
+                        // Save the updated note to Firestore
+                        coroutineScope.launch {
+                            firestoreRepository.updateNoteInCollection("add", updatedNote)
+                        }
+                    }
+
+                    // Navigate to the DetailNoteScreen and pass the onSave function
+                    DetailNoteScreen(navController, note, onSave)
                 }
             }
             composable("grammar/{grammarName}") { backStackEntry ->
@@ -180,6 +242,7 @@ fun MyApp() {
                     VocabularyScreen(navController, name)
                 }
             }
+
             composable("kaiwa_detail/{kaiwa}") { backStackEntry ->
                 val kaiwa = backStackEntry.arguments?.getString("kaiwa")
                 kaiwa?.let { name ->
@@ -190,4 +253,5 @@ fun MyApp() {
         }
     }
 }
+
 
