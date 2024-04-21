@@ -13,12 +13,19 @@
     import androidx.compose.foundation.lazy.LazyColumn
     import androidx.compose.foundation.lazy.items
     import androidx.compose.material.Button
+    import androidx.compose.material.Icon
+    import androidx.compose.material.IconButton
     import androidx.compose.material.Tab
     import androidx.compose.material.TabRow
+    import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
     import androidx.compose.material.Text
     import androidx.compose.material.TopAppBar
+    import androidx.compose.material.icons.Icons
+    import androidx.compose.material.icons.filled.ArrowBack
     import androidx.compose.material3.ExperimentalMaterial3Api
     import androidx.compose.material3.MaterialTheme
+    import androidx.compose.material3.TabRowDefaults
+    import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
     import androidx.compose.runtime.Composable
     import androidx.compose.runtime.DisposableEffect
     import androidx.compose.runtime.LaunchedEffect
@@ -40,7 +47,7 @@
 
     import com.google.firebase.firestore.DocumentSnapshot
 
-    @UnstableApi @OptIn(ExperimentalMaterial3Api::class)
+    @UnstableApi
     @Composable
     fun KaiwaScreen(navController: NavController, homeName: String?) {
         val firestoreRepository = FirestoreRepository()
@@ -60,28 +67,42 @@
         val kaiwaLists = listOf(kaiwa1Documents, kaiwa2Documents)
 
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(8.dp)
+            modifier = Modifier.fillMaxSize()
         ) {
+            // TopAppBar with back button
             TopAppBar(
                 title = {
                     Text(
                         text = "Kaiwa",
-                        style = MaterialTheme.typography.titleSmall
+                        style = MaterialTheme.typography.titleSmall,
+                        color = Color.White // Set text color to white
                     )
-                }
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back",  tint = Color.White )
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                backgroundColor = Color.Black, // Set background color to black
             )
 
-            TabRow(
+            androidx.compose.material3.TabRow(
                 selectedTabIndex = selectedTabIndex,
-                modifier = Modifier.padding(8.dp)
+                modifier = Modifier.fillMaxWidth(),
+                indicator = { tabPositions ->
+                    androidx.compose.material.TabRowDefaults.Indicator(
+                        modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]),
+                        color = Color.Black // Màu của thanh dưới khi chọn tab
+                    )
+                }
             ) {
                 kaiwaLists.forEachIndexed { index, kaiwaDocuments ->
                     Tab(
                         selected = selectedTabIndex == index,
                         onClick = { selectedTabIndex = index },
-                        text = { Text("Conversation ${index + 1}", color = Color.Black) }
+                        text = { Text("Bài ${index + 1}", color = Color.Black, onTextLayout = {}) },
+                        modifier = Modifier
                     )
                 }
             }

@@ -8,10 +8,18 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Tab
+import androidx.compose.material.TabRowDefaults
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material3.*
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,7 +32,6 @@ import com.google.firebase.firestore.DocumentSnapshot
 import kotlinx.coroutines.launch
 import java.io.IOException
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VocabularyScreen(navController: NavController, homeName: String?) {
     val firestoreRepository = FirestoreRepository()
@@ -46,21 +53,20 @@ fun VocabularyScreen(navController: NavController, homeName: String?) {
     val vocabularyLists = listOf(vocab1Documents, vocab2Documents)
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(8.dp)
+        modifier = Modifier.fillMaxSize()
     ) {
         TopAppBar(
             title = {
                 Text(
                     text = "Từ vựng",
                     onTextLayout = {},
-                    style = MaterialTheme.typography.titleLarge
+                    style = MaterialTheme.typography.subtitle1,
+                    color = Color.White // Set text color to white
                 )
             },
             navigationIcon = {
                 IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White) // Set icon color to white
                 }
             },
             actions = {
@@ -73,17 +79,16 @@ fun VocabularyScreen(navController: NavController, homeName: String?) {
                         }
                     }
                 ) {
-                    Icon(Icons.Default.PlayArrow, contentDescription = "Play Audio")
+                    Icon(Icons.Default.PlayArrow, contentDescription = "Play Audio", tint = Color.White) // Set icon color to white
                 }
             },
+            backgroundColor = Color.Black, // Set background color to black
             modifier = Modifier.fillMaxWidth()
         )
 
         TabRow(
             selectedTabIndex = selectedTabIndex,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
+            modifier = Modifier.fillMaxWidth(),
             indicator = { tabPositions ->
                 TabRowDefaults.Indicator(
                     modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]),
@@ -114,6 +119,7 @@ fun VocabularyScreen(navController: NavController, homeName: String?) {
         }
     }
 }
+
 
 @Composable
 fun VocabularyList(vocabularyDocuments: List<DocumentSnapshot>, navController: NavController, isPlaying: Boolean) {
@@ -187,14 +193,14 @@ fun VocabularyRow(title: String, content: String) {
     ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.titleSmall,
+            style = MaterialTheme.typography.subtitle1,
             color = Color.Red, // Đổi màu sang đỏ
             modifier = Modifier.padding(end = 4.dp),
             onTextLayout = {}
         )
         Text(
             text = content,
-            style = MaterialTheme.typography.titleSmall,
+            style = MaterialTheme.typography.subtitle1,
             color = Color.Blue,
         )
     }

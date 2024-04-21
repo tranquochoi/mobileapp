@@ -1,9 +1,11 @@
 package com.example.myaiapp
 
+import com.google.firebase.Timestamp
 import java.util.Date
 
 data class Note(
+    val id: String,
     val title: String ,
     val content: String ,
-    val timestamp: Date = Date()
+    val timestamp: Timestamp? = null // Thay đổi kiểu dữ liệu của timestamp thành Timestamp?
 )
