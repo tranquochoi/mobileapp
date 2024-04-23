@@ -44,7 +44,6 @@ import com.example.myaiapp.KaiwaScreen
 import com.example.myaiapp.Note
 import com.example.myaiapp.QuizItem
 import com.example.myaiapp.QuizState
-import com.example.myaiapp.ReviewScreen
 import com.example.myaiapp.SearchScreen
 import com.example.myaiapp.Settings
 import com.google.firebase.database.DatabaseReference
@@ -255,10 +254,7 @@ fun MyApp() {
                     KaiwaScreen(navController, name)
                 }
             }
-            composable("review") {
-                // Ẩn BottomNavigation khi điều hướng đến màn hình Review
-                ReviewScreen(quizDocuments = quizDocuments!!, quizStates = quizStates)
-            }
+
         }
     }
 }
