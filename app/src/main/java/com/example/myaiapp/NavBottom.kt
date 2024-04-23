@@ -42,6 +42,8 @@ import com.example.myaiapp.FirestoreRepository
 import com.example.myaiapp.GrammarScreen
 import com.example.myaiapp.KaiwaScreen
 import com.example.myaiapp.Note
+import com.example.myaiapp.QuizItem
+import com.example.myaiapp.QuizState
 import com.example.myaiapp.SearchScreen
 import com.example.myaiapp.Settings
 import com.google.firebase.database.DatabaseReference
@@ -60,6 +62,8 @@ fun MyApp() {
     val navController = rememberNavController()
     var selectedNavItem by remember { mutableStateOf("home") }
     var showBottomNav by remember { mutableStateOf(true) } // Thêm biến này để kiểm soát việc ẩn hiện BottomNavigation
+    var quizStates by remember { mutableStateOf<Map<Int, QuizState>>(emptyMap()) }
+    var quizDocuments by remember { mutableStateOf<List<QuizItem>?>(null) }
 
     Scaffold(
         bottomBar = {
@@ -250,6 +254,7 @@ fun MyApp() {
                     KaiwaScreen(navController, name)
                 }
             }
+
         }
     }
 }
