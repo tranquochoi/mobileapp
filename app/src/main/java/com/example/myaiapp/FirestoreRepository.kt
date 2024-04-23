@@ -87,16 +87,21 @@ class FirestoreRepository {
 
             querySnapshot.documents.mapNotNull { documentSnapshot ->
                 val ans = documentSnapshot.getString("ans") ?: ""
-                val op = documentSnapshot.get("op") as? Map<String, String> ?: emptyMap()
-                val ques = documentSnapshot.getString("ques") ?: ""
+                val question = documentSnapshot.getString("question") ?: ""
                 val quiz = documentSnapshot.getString("quiz") ?: ""
 
-                QuizItem(ans, op, ques, quiz)
+                val op1 = documentSnapshot.getString("op1") ?: ""
+                val op2 = documentSnapshot.getString("op2") ?: ""
+                val op3 = documentSnapshot.getString("op3") ?: ""
+                val op4 = documentSnapshot.getString("op4") ?: ""
+
+                QuizItem(ans,question,quiz, op1, op2,op3,op4)
             }.distinctBy { it.quiz } // Filter out duplicates based on the quiz content
         } catch (e: Exception) {
             emptyList()
         }
     }
+
     suspend fun updateNoteInCollection(collectionName: String, note: Note) {
         try {
             // Update the document with the new data

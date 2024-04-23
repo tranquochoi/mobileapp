@@ -1,15 +1,26 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
 
 package com.example.myaiapp
 
 import JishoApiService
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
@@ -20,6 +31,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun SearchScreen() {
     val apiService = JishoApiService.create()
@@ -27,82 +39,96 @@ fun SearchScreen() {
     var result by remember { mutableStateOf("") }
 
     MyAIAppTheme {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-        ) {
-            TextField(
-                value = query,
-                onValueChange = {
-                    query = it
-                },
-                placeholder = { Text("Nhập từ tiếng Anh, ví dụ: hello",     onTextLayout = {}, // hoặc null nếu không cần
-                ) }, // Set placeholder text color here
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Search
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-                    .background(Color.Black, shape = RoundedCornerShape(8.dp)), // Set background color and corner radius here
-                colors = TextFieldDefaults.textFieldColors(
-                    cursorColor = Color.Black, // Set cursor color here
-                    focusedIndicatorColor = Color.Transparent, // Set focus indicator color here
-                    unfocusedIndicatorColor = Color.Transparent // Set unfocus indicator color here
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Text("Tìm kiếm",
+                            style = MaterialTheme.typography.subtitle1,
+
+                    ) },
+                    backgroundColor = Color.Black,
+                    contentColor = Color.White,
+                    navigationIcon = {
+                        Icon(
+                            imageVector = Icons.Filled.Search,
+                            contentDescription = "Search Icon",
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                    }
                 )
-            )
-
-
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-                    .background(Color.Black, shape = RoundedCornerShape(8.dp)) // Set background color and corner radius here
-            ) {
-                Button(
-                    onClick = {
-                        // Sử dụng coroutines để gọi searchWords
-                        GlobalScope.launch(Dispatchers.Main) {
-                            try {
-                                val response = apiService.searchWords(" $query")
-                                result = processResponse(response)
-                            } catch (e: Exception) {
-                                result = "Error fetching data"
-                            }
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.textButtonColors(
-                        contentColor = Color.White // Set text color here
-                    ),
-                    contentPadding = PaddingValues(16.dp)
-                ) {
-                    Text("Search",    onTextLayout = {}, // hoặc null nếu không cần
-                    )
-                }
             }
-
-
-            LazyColumn(
+        ) {
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
+                    .fillMaxSize()
+                    .padding(16.dp)
             ) {
-                item {
-                    Text(
-                        text = result,
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        onTextLayout = {}, // hoặc null nếu không cần
-
+                TextField(
+                    value = query,
+                    onValueChange = {
+                        query = it
+                    },
+                    placeholder = { Text("Nhập từ tiếng Anh, ví dụ: hello") },
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        imeAction = ImeAction.Search
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    colors = TextFieldDefaults.textFieldColors(
+                        cursorColor = Color.Black,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
                     )
+                )
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                        .background(Color.Black, shape = RoundedCornerShape(8.dp))
+                ) {
+                    Button(
+                        onClick = {
+                            // Sử dụng coroutines để gọi searchWords
+                            GlobalScope.launch(Dispatchers.Main) {
+                                try {
+                                    val response = apiService.searchWords(" $query")
+                                    result = processResponse(response)
+                                } catch (e: Exception) {
+                                    result = "Error fetching data"
+                                }
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.textButtonColors(
+                            contentColor = Color.White
+                        ),
+                        contentPadding = PaddingValues(16.dp)
+                    ) {
+                        Text("Search")
+                    }
+                }
+
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                ) {
+                    item {
+                        Text(
+                            text = result,
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                        )
+                    }
                 }
             }
         }
     }
 }
+
 
 private fun processResponse(response: JishoApiResponse): String {
     val stringBuilder = StringBuilder()
