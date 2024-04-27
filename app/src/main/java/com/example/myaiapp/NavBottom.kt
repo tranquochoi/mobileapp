@@ -62,8 +62,7 @@ fun MyApp() {
     val navController = rememberNavController()
     var selectedNavItem by remember { mutableStateOf("home") }
     var showBottomNav by remember { mutableStateOf(true) } // Thêm biến này để kiểm soát việc ẩn hiện BottomNavigation
-    var quizStates by remember { mutableStateOf<Map<Int, QuizState>>(emptyMap()) }
-    var quizDocuments by remember { mutableStateOf<List<QuizItem>?>(null) }
+
 
     Scaffold(
         bottomBar = {
@@ -140,11 +139,18 @@ fun MyApp() {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = "home",
+            startDestination = "splash_screen", // SplashScreen là màn hình khởi đầu
                     modifier = Modifier.padding(innerPadding)
 
         ) {
-            composable("home") { HomeScreen(navController) }
+            composable("splash_screen") {
+                SplashScreen(navController)
+                showBottomNav = false
+            } // Đặt SplashScreen ở đây
+            composable("home") {
+                HomeScreen(navController)
+                showBottomNav = true
+            }
             composable("search") { SearchScreen() }
             composable("favorite") { Favorite() }
             composable("settings") { Settings() }

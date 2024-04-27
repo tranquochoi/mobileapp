@@ -27,77 +27,111 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.myaiapp.R
+import kotlinx.coroutines.delay
+
+@Composable
+fun SplashScreen(navController: NavController) {
+    var isLoading by remember { mutableStateOf(true) } // Biến trạng thái để kiểm soát việc hiển thị logo
+
+    LaunchedEffect(Unit) {
+        delay(2500) // Chờ 2 giây trước khi tắt hiển thị logo
+        isLoading = false // Đã tải xong dữ liệu, không cần hiển thị logo nữa
+        navController.navigate("home") {
+            popUpTo("splash_screen") { inclusive = true } // Đảm bảo SplashScreen không còn trong stack
+        }
+    }
+
+    // Hiển thị logo nếu isLoading = true
+    if (isLoading) {
+        Box(
+            Modifier
+                .fillMaxSize()
+                .background(Color.White) // Thay đổi màu nền tùy ý
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.logoryna), // Thay 'your_logo' bằng ID của logo của bạn
+                contentDescription = "App Logo",
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
+    }
+}
+
 
 @SuppressLint("RememberReturnType")
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController) {
+    var isLoading by remember { mutableStateOf(true) } // Biến trạng thái để kiểm soát việc hiển thị nội dung
 
     var mojiList by remember { mutableStateOf(emptyList<String>()) }
     var kanjiList by remember { mutableStateOf(emptyList<String>()) }
     var testList by remember { mutableStateOf(emptyList<String>()) }
-    var grammarList by remember { mutableStateOf(emptyList<String>()) } // Danh sách ngữ pháp
-    var vocabularyList by remember { mutableStateOf(emptyList<String>()) } // Danh sách từ vựng
+    var grammarList by remember { mutableStateOf(emptyList<String>()) }
+    var vocabularyList by remember { mutableStateOf(emptyList<String>()) }
     var kaiwaList by remember { mutableStateOf(emptyList<String>()) }
 
     LaunchedEffect(true) {
+        // Lấy dữ liệu từ Firestore
         mojiList = firestoreRepository.getHomeCollections()
         kanjiList = firestoreRepository.getHomeKajiCollections()
         testList = firestoreRepository.getHomeTestCollections()
-        grammarList = firestoreRepository.getGrammarCollections() // Lấy danh sách ngữ pháp
-        vocabularyList = firestoreRepository.getVocabularyCollections() // Lấy danh sách từ vựng
+        grammarList = firestoreRepository.getGrammarCollections()
+        vocabularyList = firestoreRepository.getVocabularyCollections()
         kaiwaList = firestoreRepository.getKaiwaCollections()
 
+        isLoading = false // Đã tải xong dữ liệu, không cần hiển thị logo nữa
     }
-    Box(
-        Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF0F0F0)) // Màu trắng nhạt nhạt cho nền background
-    ) {
-        // Đặt TopAppBar ở đây
-        TopAppBar(
-            title = {
-                Text(
-                    text = "TheRyna - Học tiếng Nhật cơ bản",
-                    style = TextStyle(fontWeight = FontWeight.Bold,color = Color.White.copy(alpha = 0.8f),
-                    )
+
+    // Hiển thị nội dung nếu isLoading = false
+    if (!isLoading) {
+        Box(
+            Modifier
+                .fillMaxSize()
+                .background(Color(0xFFF0F0F0)) // Màu trắng nhạt nhạt cho nền background
+        ) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                // Hiển thị banner
+                Image(
+                    painter = painterResource(id = R.drawable.bann), // Thay 'your_banner' bằng ID của banner của bạn
+                    contentDescription = "Banner",
+                    modifier = Modifier.fillMaxWidth() // Đảm bảo rằng banner chiếm toàn bộ chiều rộng của màn hình
                 )
-            },
-            actions = {
-                // Thêm biểu tượng thông báo bên phải ở đây
-                IconButton(
-                    onClick = {
-                        // Xử lý sự kiện khi nhấn vào biểu tượng thông báo
+
+            }
+            // Đặt nội dung phía dưới TopAppBar
+            Column(Modifier.fillMaxSize()) {
+                Column(Modifier.padding(top = 80.dp)) { // Dịch chuyển nội dung xuống dưới TopAppBar
+                    Column(Modifier.padding(16.dp)) {
+                        SectionTitle("Làm quen tiếng Nhật")
+                        MojiSection(mojiList, navController)
+                        GrammarSection(grammarList, navController)
+                        VocabularySection(vocabularyList, navController)
+                        SectionTitle("Bảng chữ Kanji")
+                        KanjiSection(kanjiList, navController)
+
+                        SectionTitle("Luyện tập")
+                        TestSection(testList, navController)
+                        KaiwaSection(kaiwaList, navController)
+
                     }
-                ) {
-                    Icon(Icons.Filled.Notifications, contentDescription = "Notifications", tint = Color.Yellow)
-                }
-            },
-            backgroundColor = MaterialTheme.colorScheme.scrim,
-            elevation = 4.dp
-        )
-
-        // Đặt nội dung phía dưới TopAppBar
-        Column(Modifier.fillMaxSize()) {
-            Column(Modifier.padding(top = 56.dp)) { // Dịch chuyển nội dung xuống dưới TopAppBar
-                Column(Modifier.padding(16.dp)) {
-                    SectionTitle("Làm quen tiếng Nhật")
-                    MojiSection(mojiList, navController)
-                    GrammarSection(grammarList, navController)
-                    VocabularySection(vocabularyList, navController)
-                    SectionTitle("Bảng chữ Kanji")
-                    KanjiSection(kanjiList, navController)
-
-                    SectionTitle("Luyện tập")
-                    TestSection(testList, navController)
-                    KaiwaSection(kaiwaList, navController)
-
                 }
             }
         }
+    } else {
+        Box(
+            Modifier
+                .fillMaxSize()
+                .background(Color.White) // Thay đổi màu nền tùy ý
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.loading), // Thay 'your_logo' bằng ID của logo của bạn
+                contentDescription = "App Logo",
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
     }
-
 }
+
 
 @Composable
 fun SectionTitle(title: String) {
@@ -216,7 +250,7 @@ fun TestSection(testList: List<String>, navController: NavController) {
                     )
                     Spacer(modifier = Modifier.width(16.dp))
                     Text(
-                        text = "Quiz",
+                        text = "Quiz (Chạy đua thời gian)",
                         fontWeight = FontWeight.Bold,
                         color = Color.White.copy(alpha = 0.8f), // Màu đen nhạt
                         onTextLayout = {} // Provide an empty lambda
