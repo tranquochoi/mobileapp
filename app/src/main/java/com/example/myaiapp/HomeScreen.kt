@@ -92,7 +92,7 @@ fun HomeScreen(navController: NavController) {
             Box(modifier = Modifier.fillMaxSize()) {
                 // Hiển thị banner
                 Image(
-                    painter = painterResource(id = R.drawable.bann), // Thay 'your_banner' bằng ID của banner của bạn
+                    painter = painterResource(id = R.drawable.banner), // Thay 'your_banner' bằng ID của banner của bạn
                     contentDescription = "Banner",
                     modifier = Modifier.fillMaxWidth() // Đảm bảo rằng banner chiếm toàn bộ chiều rộng của màn hình
                 )
@@ -157,7 +157,7 @@ fun MojiSection(mojiList: List<String>, navController: NavController) {
                         navigateToDetailScreen(navController, moji)
                     },
                 shape = MaterialTheme.shapes.medium,
-                backgroundColor = Color(0xFF1A1A1A) // Màu đen nhạt vừa phải
+                backgroundColor = Color(0xFFE4B4BF)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -196,7 +196,7 @@ fun KanjiSection(kanjiList: List<String>, navController: NavController) {
                         navigateToDetailKanjiScreen(navController, kanji)
                     },
                 shape = MaterialTheme.shapes.medium,
-                backgroundColor = Color(0xFF1A1A1A) // Màu đen nhạt vừa phải
+                backgroundColor = Color(0xFFE4B4BF) // Màu đen nhạt vừa phải
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -235,7 +235,7 @@ fun TestSection(testList: List<String>, navController: NavController) {
                         navigateToTestScreen(navController, test)
                     },
                 shape = MaterialTheme.shapes.medium,
-                backgroundColor = Color(0xFF1A1A1A) // Màu đen nhạt vừa phải
+                backgroundColor = Color(0xFFE4B4BF) // Màu đen nhạt vừa phải
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -274,7 +274,7 @@ fun GrammarSection(grammarList: List<String>, navController: NavController) {
                         navigateToGrammarDetailScreen(navController, grammar)
                     },
                 shape = MaterialTheme.shapes.medium,
-                backgroundColor = Color(0xFF1A1A1A) // Màu đen nhạt vừa phải
+                backgroundColor = Color(0xFFE4B4BF) // Màu đen nhạt vừa phải
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -313,7 +313,7 @@ fun VocabularySection(vocabularyList: List<String>, navController: NavController
                         navigateToVocabularyDetailScreen(navController, vocab)
                     },
                 shape = MaterialTheme.shapes.medium,
-                backgroundColor = Color(0xFF1A1A1A) // Màu đen nhạt vừa phải
+                backgroundColor = Color(0xFFE4B4BF) // Màu đen nhạt vừa phải
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -356,7 +356,7 @@ fun KaiwaSection(kaiwaList: List<String>, navController: NavController) {
                         navigateToKaiwaDetailScreen(navController, kaiwa)
                     },
                 shape = MaterialTheme.shapes.medium,
-                backgroundColor = Color(0xFF1A1A1A) // Màu đen nhạt vừa phải
+                backgroundColor = Color(0xFFE4B4BF) // Màu đen nhạt vừa phải
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
