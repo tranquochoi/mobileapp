@@ -76,6 +76,7 @@ fun DetailTestScreen(navController: NavController, homeTestName: String?) {
     var isDelayPassed by remember { mutableStateOf(false) }
     // Biến để theo dõi số tim còn lại
     var remainingLives by remember { mutableStateOf(3) }
+    var isQuizResultDisplayed by remember { mutableStateOf(false) }
 
     // Hàm reset để thiết lập lại trạng thái của bài kiểm tra
     val resetQuiz: () -> Unit = {
@@ -109,11 +110,11 @@ fun DetailTestScreen(navController: NavController, homeTestName: String?) {
                     // Hiển thị icon trái tim và số lần trả lời sai
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         repeat(remainingLives) {
-                            Icon(Icons.Default.Favorite, contentDescription = "Life", tint = Color.Red)
+                            Icon(Icons.Default.Favorite, contentDescription = "Life", tint = Color(0xFFFF6363))
                         }
                     }
                 },
-                backgroundColor = Color.Black, // Set background color to black
+                backgroundColor = Color(0xFFE4B4BF), // Set background color to black
                 modifier = Modifier.fillMaxWidth()
             )
         },
@@ -209,7 +210,8 @@ fun HorizontalScrollableTabRow(
 fun QuizDetails(
     quizItem: QuizItem,
     quizState: QuizState,
-    onOptionSelected: (String?) -> Unit
+    onOptionSelected: (String?) -> Unit,
+
 ) {
     var score by remember { mutableStateOf(0) }
     var timeLeft by remember { mutableStateOf(5) } // Thời gian còn lại tính bằng giây
@@ -306,9 +308,9 @@ fun QuizDetails(
                         val textColor = if (quizState.optionSelected != null) {
                             if (option == quizState.optionSelected) {
                                 if (option == quizItem.ans) {
-                                    Color.White
+                                    Color.Black
                                 } else {
-                                    Color.White
+                                    Color.Black
                                 }
                             } else {
                                 Color.Black

@@ -45,7 +45,7 @@ fun SearchScreen() {
                             style = MaterialTheme.typography.subtitle1,
 
                             ) },
-                    backgroundColor = Color.Black, // Đặt màu nền cho topAppBar là đen
+                    backgroundColor = Color(0xFFE4B4BF), // Đặt màu nền cho topAppBar là đen
                     contentColor = Color.White,
                     navigationIcon = {
                         Icon(

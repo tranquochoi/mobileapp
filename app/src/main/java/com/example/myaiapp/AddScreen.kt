@@ -122,7 +122,7 @@
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    backgroundColor = Color.Black, // Set background color to black
+                    backgroundColor = Color(0xFFE4B4BF), // Set background color to black
                     actions = {
                         // Show book icon if not in selection mode
                         if (showBookIcon && !showCheckboxes) {

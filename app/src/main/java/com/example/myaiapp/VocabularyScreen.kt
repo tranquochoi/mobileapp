@@ -5,9 +5,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -18,6 +24,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
@@ -25,7 +32,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.myaiapp.FirestoreRepository
 import com.google.firebase.firestore.DocumentSnapshot
@@ -49,6 +59,7 @@ fun VocabularyScreen(navController: NavController, homeName: String?) {
     var selectedTabIndex by remember { mutableStateOf(0) }
     var playAudioClicked by remember { mutableStateOf(false) }
     var isPlaying by remember { mutableStateOf(false) } // Trạng thái của âm thanh đang phát
+    var showBookDialog by remember { mutableStateOf(false) } // State để điều khiển việc hiển thị hộp thoại
 
     val vocabularyLists = listOf(vocab1Documents, vocab2Documents)
 
@@ -73,16 +84,14 @@ fun VocabularyScreen(navController: NavController, homeName: String?) {
                 // Thêm biểu tượng hình ảnh play vào phía bên trái của TopAppBar
                 IconButton(
                     onClick = {
-                        val audioUrls = vocabularyLists[selectedTabIndex].mapNotNull { it.getString("audio") }
-                        if (audioUrls.isNotEmpty()) {
-                            playAudioClicked = true
-                        }
+                        // Hiển thị hộp thoại dữ liệu từ vựng khi người dùng nhấp vào icon book
+                        showBookDialog = true
                     }
                 ) {
-                    Icon(Icons.Default.PlayArrow, contentDescription = "Play Audio", tint = Color.White) // Set icon color to white
+                    Icon(Icons.Default.Book, contentDescription = "Book", tint = Color.White)
                 }
             },
-            backgroundColor = Color.Black, // Set background color to black
+            backgroundColor = Color(0xFFE4B4BF),
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -105,6 +114,13 @@ fun VocabularyScreen(navController: NavController, homeName: String?) {
                 )
             }
         }
+        if (showBookDialog) {
+            VocabularyDataDialog(
+                vocabularyDocuments = vocabularyLists[selectedTabIndex],
+                onDismiss = { showBookDialog = false }
+            )
+        }
+
 
         if (playAudioClicked) {
             val audioUrls = vocabularyLists[selectedTabIndex].mapNotNull { it.getString("audio") }
@@ -119,6 +135,94 @@ fun VocabularyScreen(navController: NavController, homeName: String?) {
         }
     }
 }
+@Composable
+fun VocabularyDataDialog(
+    vocabularyDocuments: List<DocumentSnapshot>,
+    onDismiss: () -> Unit
+) {
+    var currentIndex by remember { mutableStateOf(0) }
+    val currentDocument = vocabularyDocuments.getOrNull(currentIndex)
+
+    // Nội dung mặt trước và mặt sau của thẻ từ vựng
+    val frontContent = currentDocument?.getString("kotoba") ?: ""
+    val backContent = currentDocument?.getString("go") ?: ""
+
+    FlashcardDialog(
+        onDismissRequest = onDismiss,
+        frontContent = frontContent,
+        backContent = backContent
+    ) {
+        Box(
+            modifier = Modifier.fillMaxWidth().padding(top = 32.dp),
+            contentAlignment = Alignment.BottomCenter
+        ) {
+            Box(
+                modifier = Modifier.padding(vertical = 8.dp),
+            ) {
+                Button(
+                    onClick = {
+                        currentIndex = (currentIndex + 1) % vocabularyDocuments.size
+                    },
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black),
+                    enabled = vocabularyDocuments.size > 1,
+                    modifier = Modifier
+                ) {
+                    Text("Tiếp", color = Color.White)
+                }
+            }
+        }
+
+    }
+}
+
+@Composable
+fun FlashcardDialog(
+    onDismissRequest: () -> Unit,
+    frontContent: String,
+    backContent: String,
+    confirmButtonContent: @Composable () -> Unit
+) {
+    var showFrontSide by remember { mutableStateOf(true) }
+
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        title = {
+            Box(
+                modifier = Modifier.fillMaxWidth().padding(top = 32.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(500.dp)
+                        .clickable {
+                            showFrontSide = !showFrontSide
+                        },
+                    shape = RoundedCornerShape(8.dp),
+                    elevation = 8.dp,
+                    backgroundColor = Color.White
+                ) {
+                    Text(
+                        modifier = Modifier.height(500.dp),
+                        text = if (showFrontSide) frontContent else backContent,
+                        textAlign = TextAlign.Center,
+                        style = TextStyle(fontSize = 24.sp),
+                        color = if (showFrontSide) Color.Red else Color.Blue
+                    )
+                }
+            }
+            Text(
+                text = if (showFrontSide) "Mặt trước" else "Mặt sau",
+                textAlign = TextAlign.Center,
+                style = TextStyle(fontSize = 16.sp, color = if (showFrontSide) Color.Red else Color.Blue)
+            )
+        },
+        buttons = {
+            confirmButtonContent()
+        }
+    )
+}
+
 
 
 @Composable

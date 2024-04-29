@@ -84,7 +84,7 @@
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
-                backgroundColor = Color.Black, // Set background color to black
+                backgroundColor = Color(0xFFE4B4BF), // Set background color to black
             )
 
             androidx.compose.material3.TabRow(
