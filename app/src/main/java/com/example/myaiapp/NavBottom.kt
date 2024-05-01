@@ -24,8 +24,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -42,8 +40,6 @@ import com.example.myaiapp.FirestoreRepository
 import com.example.myaiapp.GrammarScreen
 import com.example.myaiapp.KaiwaScreen
 import com.example.myaiapp.Note
-import com.example.myaiapp.QuizItem
-import com.example.myaiapp.QuizState
 import com.example.myaiapp.Settings
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -150,7 +146,29 @@ fun MyApp() {
                 HomeScreen(navController)
                 showBottomNav = true
             }
-            composable("search") { SearchScreen() }
+            composable("search") {
+                SearchScreen(navController)
+            }
+            composable(
+                "detail/{japaneseWord}/{japaneseReading}/{englishDefinitions}",
+                arguments = listOf(
+                    navArgument("japaneseWord") { defaultValue = "" },
+                    navArgument("japaneseReading") { defaultValue = "" }, // Thêm japaneseReading vào danh sách đối số
+                    navArgument("englishDefinitions") { defaultValue = "" }
+                )
+            ) { backStackEntry ->
+                val japaneseWord = backStackEntry.arguments?.getString("japaneseWord") ?: ""
+                val japaneseReading = backStackEntry.arguments?.getString("japaneseReading") ?: "" // Lấy giá trị japaneseReading từ arguments
+                val englishDefinitions = backStackEntry.arguments?.getString("englishDefinitions") ?: ""
+
+                DetailSearchScreen(
+                    navController,
+                    japaneseWord,
+                    japaneseReading, // Truyền japaneseReading vào DetailSearchScreen
+                    englishDefinitions
+                )
+            }
+
             composable("favorite") { Favorite() }
             composable("settings") { Settings() }
             composable("detail/{moji}") { backStackEntry ->
