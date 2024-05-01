@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -50,6 +51,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -72,6 +76,7 @@ fun DetailTestScreen(navController: NavController, homeTestName: String?) {
     var isDelayPassed by remember { mutableStateOf(false) }
     // Biến để theo dõi số tim còn lại
     var remainingLives by remember { mutableStateOf(3) }
+    var isQuizResultDisplayed by remember { mutableStateOf(false) }
 
     // Hàm reset để thiết lập lại trạng thái của bài kiểm tra
     val resetQuiz: () -> Unit = {
@@ -105,11 +110,11 @@ fun DetailTestScreen(navController: NavController, homeTestName: String?) {
                     // Hiển thị icon trái tim và số lần trả lời sai
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         repeat(remainingLives) {
-                            Icon(Icons.Default.Favorite, contentDescription = "Life", tint = Color.Red)
+                            Icon(Icons.Default.Favorite, contentDescription = "Life", tint = Color(0xFFFF6363))
                         }
                     }
                 },
-                backgroundColor = Color.Black, // Set background color to black
+                backgroundColor = Color(0xFFE4B4BF), // Set background color to black
                 modifier = Modifier.fillMaxWidth()
             )
         },
@@ -205,12 +210,14 @@ fun HorizontalScrollableTabRow(
 fun QuizDetails(
     quizItem: QuizItem,
     quizState: QuizState,
-    onOptionSelected: (String?) -> Unit
+    onOptionSelected: (String?) -> Unit,
+
 ) {
     var score by remember { mutableStateOf(0) }
     var timeLeft by remember { mutableStateOf(5) } // Thời gian còn lại tính bằng giây
     var isTimerRunning by remember { mutableStateOf(false) }
     var timer: CountDownTimer? by remember { mutableStateOf(null) }
+    var timerFinished by remember { mutableStateOf(false) } // Biến để kiểm tra xem bộ đếm thời gian đã hoàn thành chưa
 
     // Hàm để bắt đầu bộ đếm thời gian
     fun startTimer() {
@@ -220,6 +227,7 @@ fun QuizDetails(
             }
 
             override fun onFinish() {
+                timerFinished = true // Đặt cờ báo hiệu rằng bộ đếm thời gian đã hoàn thành
                 if (quizState.optionSelected == quizItem.ans) {
                     score += 10 // Cộng 10 điểm nếu chọn đúng
                 }
@@ -240,26 +248,30 @@ fun QuizDetails(
         timeLeft = 5
         isTimerRunning = false
         timer?.cancel() // Hủy bộ đếm thời gian trước đó nếu có
-        startTimer() // Bắt đầu bộ đếm thời gian mới khi chuyển câu hỏi
+        timerFinished = false // Đặt lại cờ báo hiệu
+        if (!timerFinished) { // Chỉ bắt đầu bộ đếm thời gian mới nếu bộ đếm thời gian trước đó đã hoàn thành
+            startTimer()
+        }
     }
+
     // Hiển thị thời gian còn lại cho câu hỏi
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(bottom = 8.dp)
     ) {
         Icon(
-            imageVector = Icons.Filled.Timelapse, // Sử dụng biểu tượng đồng hồ từ thư viện Material Design
+            imageVector = Icons.Filled.Timelapse,
             contentDescription = "Time Left Icon",
-            tint = if (timeLeft < 3) Color.Red else Color(android.graphics.Color.parseColor("#FFE55B")), // Thay đổi màu sắc nếu còn ít thời gian
+            tint = if (timeLeft < 3) Color.Red else Color(android.graphics.Color.parseColor("#FFE55B")),
             modifier = Modifier
-                .size(48.dp) // Đặt kích thước lớn hơn cho biểu tượng đồng hồ
-                .padding(end = 4.dp) // Tạo một khoảng cách giữa biểu tượng và văn bản
+                .size(48.dp)
+                .padding(end = 4.dp)
         )
         Text(
             text = " $timeLeft",
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
-            color = if (timeLeft < 3) Color.Red else Color(android.graphics.Color.parseColor("#FFE55B")) // Thay đổi màu sắc nếu còn ít thời gian
+            color = if (timeLeft < 3) Color.Red else Color(android.graphics.Color.parseColor("#FFE55B"))
         )
     }
     Spacer(modifier = Modifier.height(18.dp)) // Khoảng trống để đẩy nội dung xuống dưới
@@ -279,10 +291,6 @@ fun QuizDetails(
             modifier = Modifier.padding(bottom = 8.dp),
             fontWeight = FontWeight.Bold
         )
-
-
-
-
         val options = listOf(quizItem.op1, quizItem.op2, quizItem.op3, quizItem.op4)
 
         LazyColumn(
@@ -300,9 +308,9 @@ fun QuizDetails(
                         val textColor = if (quizState.optionSelected != null) {
                             if (option == quizState.optionSelected) {
                                 if (option == quizItem.ans) {
-                                    Color.White
+                                    Color.Black
                                 } else {
-                                    Color.White
+                                    Color.Black
                                 }
                             } else {
                                 Color.Black
@@ -314,13 +322,13 @@ fun QuizDetails(
                         val backgroundColor = if (quizState.optionSelected != null) {
                             if (option == quizState.optionSelected) {
                                 if (option == quizItem.ans) {
-                                    Color.Green
+                                    Color(0xFFC1FF72)
                                 } else {
-                                    Color.Red
+                                    Color(0xFFFF5757)
                                 }
                             } else {
                                 if (option == quizItem.ans) {
-                                    Color.Green
+                                    Color(0xFFC1FF72)
                                 } else {
                                     Color.White
                                 }
@@ -373,17 +381,34 @@ fun QuizResult(
 ) {
     // Tính số điểm cho từng câu
     val totalScore = correctCount * 10
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+
+    Box(
+        modifier = Modifier.fillMaxSize()
     ) {
-        Text("Kết quả", fontWeight = FontWeight.Bold, fontSize = 24.sp) // Kích thước chữ lớn hơn
-        Text("Tổng số điểm: $totalScore", fontSize = 20.sp) // Kích thước chữ lớn hơn
-        IconButton(
-            onClick = onResetClick // Gọi hàm xử lý khi nút "Reset" được nhấn
+        // Hình ảnh nền
+        Image(
+            painter = painterResource(id = R.drawable.img), // Thay "background_image" bằng đường dẫn tới tệp ảnh của bạn
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.FillBounds // Đảm bảo hình ảnh nền đầy đủ kích thước và không bị giãn ra
+        )
+
+        // Nội dung của QuizResult
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Icon(Icons.Filled.Refresh, contentDescription = "Reset")
+            Text(
+                "Tổng số điểm: $totalScore",
+                fontSize = 20.sp,
+                fontStyle = FontStyle.Italic // Làm nghiêng chữ
+            ) // Kích thước chữ lớn hơn
+            IconButton(
+                onClick = onResetClick // Gọi hàm xử lý khi nút "Reset" được nhấn
+            ) {
+                Icon(Icons.Filled.Refresh, contentDescription = "Reset")
+            }
         }
     }
 }

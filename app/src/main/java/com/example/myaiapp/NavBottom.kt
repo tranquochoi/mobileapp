@@ -44,7 +44,6 @@ import com.example.myaiapp.KaiwaScreen
 import com.example.myaiapp.Note
 import com.example.myaiapp.QuizItem
 import com.example.myaiapp.QuizState
-import com.example.myaiapp.SearchScreen
 import com.example.myaiapp.Settings
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -62,8 +61,7 @@ fun MyApp() {
     val navController = rememberNavController()
     var selectedNavItem by remember { mutableStateOf("home") }
     var showBottomNav by remember { mutableStateOf(true) } // Thêm biến này để kiểm soát việc ẩn hiện BottomNavigation
-    var quizStates by remember { mutableStateOf<Map<Int, QuizState>>(emptyMap()) }
-    var quizDocuments by remember { mutableStateOf<List<QuizItem>?>(null) }
+
 
     Scaffold(
         bottomBar = {
@@ -140,33 +138,48 @@ fun MyApp() {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = "home",
+            startDestination = "splash_screen", // SplashScreen là màn hình khởi đầu
                     modifier = Modifier.padding(innerPadding)
 
         ) {
-            composable("home") { HomeScreen(navController) }
+            composable("splash_screen") {
+                SplashScreen(navController)
+                showBottomNav = false
+            } // Đặt SplashScreen ở đây
+            composable("home") {
+                HomeScreen(navController)
+                showBottomNav = true
+            }
             composable("search") { SearchScreen() }
             composable("favorite") { Favorite() }
             composable("settings") { Settings() }
             composable("detail/{moji}") { backStackEntry ->
                 val moji = backStackEntry.arguments?.getString("moji")
                 DetailScreen(navController, moji)
+                showBottomNav = false
+
             }
             composable("detailkanji/{kanji}") { backStackEntry ->
                 val kanji = backStackEntry.arguments?.getString("kanji")
                 DetailKanjiScreen(navController,kanji)
+                showBottomNav = false
+
             }
             composable("detailtest/{test}") { backStackEntry ->
                 val test = backStackEntry.arguments?.getString("test")
                 DetailTestScreen(navController,test)
+                showBottomNav = false
+
             }
             composable("add") { AddScreen(navController, firestoreRepository) }
 
             composable("addScreen") {
                 AddScreen(navController, firestoreRepository = FirestoreRepository())
+
             }
             composable("addNote") {
                 AddNoteScreen(navController, firestoreRepository = FirestoreRepository())
+
             }
 
 
@@ -199,6 +212,8 @@ fun MyApp() {
 
                     // Navigate to the DetailNoteScreen and pass the onSave function
                     DetailNoteScreen(navController, note, onSave)
+                    showBottomNav = false
+
                 }
             }
             composable("detailAdd/{id}") { backStackEntry ->
@@ -238,6 +253,8 @@ fun MyApp() {
                     // Ẩn BottomNavigation khi điều hướng đến màn hình Grammar
                     GrammarScreen(navController = navController, homeName = name)
                 }
+                showBottomNav = false
+
             }
             composable("vocab_detail/{vocab}") { backStackEntry ->
                 val vocab = backStackEntry.arguments?.getString("vocab")
@@ -245,6 +262,8 @@ fun MyApp() {
                     // Ẩn BottomNavigation khi điều hướng đến màn hình Vocabulary
                     VocabularyScreen(navController, name)
                 }
+                showBottomNav = false
+
             }
 
             composable("kaiwa_detail/{kaiwa}") { backStackEntry ->
@@ -253,6 +272,8 @@ fun MyApp() {
                     // Ẩn BottomNavigation khi điều hướng đến màn hình Vocabulary
                     KaiwaScreen(navController, name)
                 }
+                showBottomNav = false
+
             }
 
         }

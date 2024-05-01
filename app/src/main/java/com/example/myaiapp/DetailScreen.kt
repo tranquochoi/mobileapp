@@ -70,7 +70,7 @@ fun DetailScreen(navController: NavController, homeName: String?) {
                     )
                 }
             },
-            backgroundColor = Color.Black, // Set background color to black
+            backgroundColor = Color(0xFFE4B4BF), // Set background color to black
             modifier = Modifier.fillMaxWidth()
         )
 

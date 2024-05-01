@@ -1,5 +1,4 @@
-
-package com.example.myaiapp
+package com.example.myapp
 
 import JishoApiService
 import android.annotation.SuppressLint
@@ -26,7 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.myaiapp.ui.theme.MyAIAppTheme
+import com.example.myaiapp.JishoApiResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -38,7 +37,6 @@ fun SearchScreen() {
     var query by remember { mutableStateOf("") }
     var result by remember { mutableStateOf("") }
 
-    MyAIAppTheme {
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -46,8 +44,8 @@ fun SearchScreen() {
                         Text("Tìm kiếm",
                             style = MaterialTheme.typography.subtitle1,
 
-                    ) },
-                    backgroundColor = Color.Black,
+                            ) },
+                    backgroundColor = Color(0xFFE4B4BF), // Đặt màu nền cho topAppBar là đen
                     contentColor = Color.White,
                     navigationIcon = {
                         Icon(
@@ -126,9 +124,7 @@ fun SearchScreen() {
                 }
             }
         }
-    }
 }
-
 
 private fun processResponse(response: JishoApiResponse): String {
     val stringBuilder = StringBuilder()

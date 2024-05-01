@@ -86,7 +86,7 @@ fun DetailKanjiScreen(navController: NavController, homeKanjiName: String?) {
                     Icon(Icons.Filled.ArrowBack, contentDescription = "Back", tint = Color.White) // Set icon color to white
                 }
             },
-            backgroundColor = Color.Black, // Set background color to black
+            backgroundColor = Color(0xFFE4B4BF), // Set background color to black
             modifier = Modifier.fillMaxWidth()
         )
 
