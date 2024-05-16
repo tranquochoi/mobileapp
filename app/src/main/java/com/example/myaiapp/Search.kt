@@ -10,6 +10,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -17,6 +18,7 @@ import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -29,112 +31,120 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-    @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
-    @Composable
-    fun SearchScreen(navController: NavController) {
-        val apiService = remember { JishoApiService.create() }
-        var query by remember { mutableStateOf("") }
-        var result by remember { mutableStateOf<JishoApiResponse?>(null) }
+// SearchResult.kt
+data class SearchResult(
+    val japaneseWord: String,
+    val japaneseReading: String,
+    val englishDefinitions: String
+)
 
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = {
-                        Text("Tìm kiếm", style = MaterialTheme.typography.subtitle1)
-                    },
-                    backgroundColor = Color(0xFFE4B4BF),
-                    contentColor = Color.White,
-                    navigationIcon = {
-                        Icon(
-                            imageVector = Icons.Filled.Search,
-                            contentDescription = "Search Icon",
-                            modifier = Modifier.padding(start = 8.dp)
-                        )
-                    }
-                )
-            }
-        ) {
-            Column(
-                modifier = Modifier.fillMaxSize().padding(8.dp)
-            ) {
-                TextField(
-                    value = query,
-                    onValueChange = { query = it },
-                    placeholder = { Text("Nhập từ tiếng Anh, ví dụ: hello") },
-                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
-                    modifier = Modifier.fillMaxWidth().padding(8.dp),
-                    colors = TextFieldDefaults.textFieldColors(
-                        cursorColor = Color.Black, // Màu của con trỏ
-                        focusedIndicatorColor = Color.Black, // Màu của gạch dưới khi TextField có focus
-                        unfocusedIndicatorColor = Color.Black // Màu của gạch dưới khi TextField không có focus
-                    )
-                )
-
-                Button(
-                    onClick = {
-                        GlobalScope.launch(Dispatchers.Main) {
-                            try {
-                                val response = apiService.searchWords(query)
-                                result = response
-                            } catch (e: Exception) {
-                                result = null
-                                // Handle error
-                            }
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.textButtonColors(
-                        backgroundColor = Color.Black, // Màu nền đen
-                        contentColor = Color.White // Màu chữ trắng
-                    ),
-                    contentPadding = PaddingValues(16.dp)
-                ) {
-                    Text("Search")
-                }
-
-                result?.let { response ->
-                    LazyColumn(
-                        modifier = Modifier.fillMaxWidth().padding(8.dp)
-                    ) {
-                        items(response.data) { word ->
-                            val japaneseWord = word.japanese.firstOrNull()?.word ?: ""
-                            val japaneseReading = word.japanese.firstOrNull()?.reading ?: "" // Lấy giá trị reading từ JishoJapanese
-                            val englishDefinitions = word.senses.flatMap { it.english_definitions }.joinToString(", ")
-
-                            DetailSearchScreen(navController, japaneseWord, japaneseReading, englishDefinitions) // Truyền japaneseReading vào DetailSearchScreen
-                        }
-                    }
-                }
-
-            }
-        }
-    }
+// DetailSearchScreen.kt
 @Composable
 fun DetailSearchScreen(
     navController: NavController,
-    japaneseWord: String,
-    japaneseReading: String, // Nhận thêm tham số japaneseReading
-    englishDefinitions: String
-)
-    {
+    searchResult: SearchResult
+) {
     Column(
         modifier = Modifier.padding(16.dp)
     ) {
         Text(
-            text = "Japanese: $japaneseWord",
+            text = "Tiếng Nhật: ${searchResult.japaneseWord}",
             modifier = Modifier.clickable {
                 // Navigation to detail screen
-                navController.navigate("detail/$japaneseWord/$japaneseReading/$englishDefinitions")
+                navController.navigate("detail/${searchResult.japaneseWord}/${searchResult.japaneseReading}/${searchResult.englishDefinitions}")
             }
         )
         Text(
-            text = "Reading: $japaneseReading", // Hiển thị giá trị japaneseReading
+            text = "Đọc: ${searchResult.japaneseReading}",
             modifier = Modifier.padding(top = 8.dp)
         )
         Text(
-            text = "English Definitions: $englishDefinitions",
+            text = "Nghĩa tiếng Anh: ${searchResult.englishDefinitions}",
             modifier = Modifier.padding(top = 8.dp)
         )
+    }
+}
+
+
+// SearchScreen.kt
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@Composable
+fun SearchScreen(navController: NavController) {
+    val apiService = remember { JishoApiService.create() }
+    var query by remember { mutableStateOf("") }
+    var result by remember { mutableStateOf<JishoApiResponse?>(null) }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text("Tìm kiếm (sổ tay Kanji)", style = MaterialTheme.typography.subtitle1)
+                },
+                backgroundColor = Color(0xFFE4B4BF),
+                contentColor = Color.White,
+                navigationIcon = {
+                    Icon(
+                        imageVector = Icons.Filled.Search,
+                        contentDescription = "Search Icon",
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
+            )
+        }
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize().padding(8.dp)
+        ) {
+            TextField(
+                value = query,
+                onValueChange = { query = it },
+                placeholder = { Text("Nhập từ tiếng Anh, ví dụ: hello") },
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
+                modifier = Modifier.fillMaxWidth().padding(8.dp),
+                colors = TextFieldDefaults.textFieldColors(
+                    cursorColor = Color.Black,
+                    focusedIndicatorColor = Color.Black,
+                    unfocusedIndicatorColor = Color.Black
+                )
+            )
+
+            Button(
+                onClick = {
+                    GlobalScope.launch(Dispatchers.Main) {
+                        try {
+                            val response = apiService.searchWords(query)
+                            result = response
+                        } catch (e: Exception) {
+                            result = null
+                            // Handle error
+                        }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.textButtonColors(
+                    backgroundColor = Color.Black,
+                    contentColor = Color.White
+                ),
+                contentPadding = PaddingValues(16.dp)
+            ) {
+                Text("Search")
+            }
+
+            result?.let { response ->
+                LazyColumn(
+                    modifier = Modifier.fillMaxWidth().padding(8.dp)
+                ) {
+                    items(response.data) { word ->
+                        val japaneseWord = word.japanese.firstOrNull()?.word ?: ""
+                        val japaneseReading = word.japanese.firstOrNull()?.reading ?: ""
+                        val englishDefinitions = word.senses.flatMap { it.english_definitions }.joinToString(", ")
+                        val searchResult = SearchResult(japaneseWord, japaneseReading, englishDefinitions)
+
+                        DetailSearchScreen(navController, searchResult)
+                    }
+                }
+            }
+        }
     }
 }
 
