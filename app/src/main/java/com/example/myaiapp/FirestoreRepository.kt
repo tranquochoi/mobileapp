@@ -67,19 +67,6 @@ class FirestoreRepository {
             emptyList()
         }
     }
-
-    suspend fun getTestDocuments(homeTestName: String, collectionName: String): List<String> {
-        return try {
-            val querySnapshot = db.collection("test").document(homeTestName)
-                .collection(collectionName).get().await()
-
-            querySnapshot.documents.mapNotNull { it.id }
-        } catch (e: Exception) {
-            emptyList()
-        }
-    }
-    // Trong lớp FirestoreRepository
-
     suspend fun getAllQuizDocuments(homeTestName: String, collectionName: String): List<QuizItem> {
         return try {
             val querySnapshot = db.collection("test").document(homeTestName)
@@ -118,8 +105,6 @@ class FirestoreRepository {
         }
     }
 
-
-
     suspend fun getAddCollection(): List<Note> {
         return try {
             val querySnapshot = db.collection("add").get().await()
@@ -148,8 +133,6 @@ class FirestoreRepository {
             // Xử lý ngoại lệ, ví dụ: ghi log hoặc thông báo cho người dùng
         }
     }
-
-
 
     suspend fun addNoteToCollection(collectionName: String, note: Note) {
         try {

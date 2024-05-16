@@ -6,6 +6,7 @@ import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
@@ -24,23 +25,23 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.myaiapp.AddNoteScreen
 import com.example.myaiapp.AddScreen
+import com.example.myaiapp.Chatbot
 
 import com.example.myaiapp.DetailKanjiScreen
 import com.example.myaiapp.DetailNoteScreen
 import com.example.myaiapp.DetailScreen
 import com.example.myaiapp.DetailTestScreen
-import com.example.myaiapp.Favorite
 import com.example.myaiapp.FirestoreRepository
 import com.example.myaiapp.GrammarScreen
 import com.example.myaiapp.KaiwaScreen
 import com.example.myaiapp.Note
-import com.example.myaiapp.Settings
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.launch
@@ -57,6 +58,7 @@ fun MyApp() {
     val navController = rememberNavController()
     var selectedNavItem by remember { mutableStateOf("home") }
     var showBottomNav by remember { mutableStateOf(true) } // Thêm biến này để kiểm soát việc ẩn hiện BottomNavigation
+    var isQuizStarted by remember { mutableStateOf(false) }
 
 
     Scaffold(
@@ -69,7 +71,20 @@ fun MyApp() {
                     contentColor = Color.Gray, // Color of unselected icons and text
                     elevation = 16.dp, // Tăng độ nâng của BottomAppBar
                 ) {
-
+                    BottomNavigationItem(
+                        selected = selectedNavItem == "chat",
+                        onClick = {
+                            selectedNavItem = "chat"
+                            navController.navigate("chat")
+                        },
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Default.Chat,
+                                contentDescription = null,
+                                tint = if (selectedNavItem == "chat") MaterialTheme.colorScheme.scrim else LocalContentColor.current.copy(alpha = 0.6f)
+                            )
+                        }
+                    )
                     BottomNavigationItem(
                         selected = selectedNavItem == "add",
                         onClick = {
@@ -84,20 +99,7 @@ fun MyApp() {
                             )
                         }
                     )
-                    BottomNavigationItem(
-                        selected = selectedNavItem == "search",
-                        onClick = {
-                            selectedNavItem = "search"
-                            navController.navigate("search")
-                        },
-                        icon = {
-                            Icon(
-                                imageVector = Icons.Default.Search,
-                                contentDescription = null,
-                                tint = if (selectedNavItem == "search") MaterialTheme.colorScheme.tertiary else LocalContentColor.current.copy(alpha = 0.6f)
-                            )
-                        }
-                    )
+
                     BottomNavigationItem(
                         selected = selectedNavItem == "home",
                         onClick = {
@@ -114,21 +116,23 @@ fun MyApp() {
                     )
 
                     BottomNavigationItem(
-                        selected = selectedNavItem == "favorite",
+                        selected = selectedNavItem == "search",
                         onClick = {
-                            selectedNavItem = "favorite"
-                            navController.navigate("favorite")
+                            selectedNavItem = "search"
+                            navController.navigate("search")
                         },
                         icon = {
                             Icon(
-                                imageVector = Icons.Default.Favorite,
+                                imageVector = Icons.Default.Search,
                                 contentDescription = null,
-                                tint = if (selectedNavItem == "favorite") MaterialTheme.colorScheme.error else LocalContentColor.current.copy(alpha = 0.6f)
+                                tint = if (selectedNavItem == "search") MaterialTheme.colorScheme.tertiary else LocalContentColor.current.copy(alpha = 0.6f)
                             )
                         }
                     )
 
+
                 }
+
             }
         }
     ) { innerPadding ->
@@ -138,39 +142,39 @@ fun MyApp() {
                     modifier = Modifier.padding(innerPadding)
 
         ) {
+
             composable("splash_screen") {
                 SplashScreen(navController)
                 showBottomNav = false
             } // Đặt SplashScreen ở đây
             composable("home") {
                 HomeScreen(navController)
+
                 showBottomNav = true
             }
             composable("search") {
                 SearchScreen(navController)
             }
+            composable("chat") {
+                Chatbot(navController)
+            }
             composable(
                 "detail/{japaneseWord}/{japaneseReading}/{englishDefinitions}",
                 arguments = listOf(
                     navArgument("japaneseWord") { defaultValue = "" },
-                    navArgument("japaneseReading") { defaultValue = "" }, // Thêm japaneseReading vào danh sách đối số
+                    navArgument("japaneseReading") { defaultValue = "" },
                     navArgument("englishDefinitions") { defaultValue = "" }
                 )
             ) { backStackEntry ->
                 val japaneseWord = backStackEntry.arguments?.getString("japaneseWord") ?: ""
-                val japaneseReading = backStackEntry.arguments?.getString("japaneseReading") ?: "" // Lấy giá trị japaneseReading từ arguments
+                val japaneseReading = backStackEntry.arguments?.getString("japaneseReading") ?: ""
                 val englishDefinitions = backStackEntry.arguments?.getString("englishDefinitions") ?: ""
 
-                DetailSearchScreen(
-                    navController,
-                    japaneseWord,
-                    japaneseReading, // Truyền japaneseReading vào DetailSearchScreen
-                    englishDefinitions
-                )
+                val searchResult = SearchResult(japaneseWord, japaneseReading, englishDefinitions)
+
+                DetailSearchScreen(navController, searchResult)
             }
 
-            composable("favorite") { Favorite() }
-            composable("settings") { Settings() }
             composable("detail/{moji}") { backStackEntry ->
                 val moji = backStackEntry.arguments?.getString("moji")
                 DetailScreen(navController, moji)
@@ -193,8 +197,8 @@ fun MyApp() {
 
             composable("addScreen") {
                 AddScreen(navController, firestoreRepository = FirestoreRepository())
-
             }
+
             composable("addNote") {
                 AddNoteScreen(navController, firestoreRepository = FirestoreRepository())
 

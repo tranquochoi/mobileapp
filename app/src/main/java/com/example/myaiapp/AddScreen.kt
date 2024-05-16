@@ -1,5 +1,5 @@
     package com.example.myaiapp
-    
+
     import android.annotation.SuppressLint
     import androidx.activity.compose.BackHandler
     import androidx.compose.foundation.background
@@ -70,6 +70,12 @@
     import java.util.TimeZone
     import java.util.UUID
 
+    private fun formatTime(milliseconds: Long): String {
+        val hours = (milliseconds / (1000 * 60 * 60)).toInt()
+        val minutes = ((milliseconds % (1000 * 60 * 60)) / (1000 * 60)).toInt()
+        val seconds = ((milliseconds % (1000 * 60 * 60)) % (1000 * 60) / 1000).toInt()
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds)
+    }
 
     @Composable
     fun AddScreen(navController: NavController, firestoreRepository: FirestoreRepository) {
@@ -89,6 +95,7 @@
         var currentNoteIndex by remember { mutableStateOf(0) }
         var showFrontSide by remember { mutableStateOf(true) } // Track front and back side of flashcard
 
+
         LaunchedEffect(shouldReload) {
             if (shouldReload) {
                 firestoreRepository.getAddCollection().let { notes ->
@@ -99,7 +106,9 @@
             }
         }
 
+
         LaunchedEffect(Unit) {
+
             firestoreRepository.getAddCollection().let { notes ->
                 notesSnapshot = notes.reversed()
                 checkedStates = MutableList(notes.size) { false }
@@ -254,15 +263,14 @@
                                         },
                                         shape = RoundedCornerShape(8.dp),
                                         elevation = 8.dp,
-                                        backgroundColor = Color.White
-                                    ) {
+                                        backgroundColor = Color(0xFFE4B4BF)                                    ) {
                                         // Hiển thị nội dung tùy thuộc vào mặt trước/mặt sau
                                         Text(
                                             modifier = Modifier.height(500.dp),
                                             text = if (showFrontSide) notesSnapshot.getOrNull(currentNoteIndex)?.title ?: "" else notesSnapshot.getOrNull(currentNoteIndex)?.content ?: "",
                                             textAlign = TextAlign.Center,
                                             style = TextStyle(fontSize = 24.sp),
-                                            color = if (showFrontSide) Color.Red else Color.Blue
+                                            color = if (showFrontSide) Color.White else Color.White
                                         )
                                     }
                                 }
@@ -270,7 +278,7 @@
                                 Text(
                                     text = if (showFrontSide) "Mặt trước" else "Mặt sau",
                                     textAlign = TextAlign.Center,
-                                    style = TextStyle(fontSize = 16.sp, color = if (showFrontSide) Color.Red else Color.Blue)
+                                    style = TextStyle(fontSize = 16.sp, color = if (showFrontSide) Color.Black else Color.Black)
                                 )
                             },
                             buttons = {
@@ -296,7 +304,8 @@
                                         }
                                     }
                                 }
-                            }
+                            },
+                            backgroundColor = Color(0xFFF1D6DC)
                         )
                     }
                 }

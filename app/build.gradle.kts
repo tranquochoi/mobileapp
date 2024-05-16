@@ -54,24 +54,18 @@ android {
 }
 
 dependencies {
+
+
     implementation ("org.jsoup:jsoup:1.14.3")
     implementation ("androidx.navigation:navigation-compose:2.4.0-alpha07")
     implementation ("androidx.compose.animation:animation:1.2.0")
     implementation ("io.coil-kt:coil-compose:1.4.0")
 
-    implementation ("androidx.media3:media3-exoplayer:1.3.1") // Cho phát media sử dụng ExoPlayer
-    implementation ("androidx.media3:media3-exoplayer-dash:1.3.1") // Hỗ trợ phát DASH với ExoPlayer
-    implementation ("androidx.media3:media3-exoplayer-hls:1.3.1") // Hỗ trợ phát HLS với ExoPlayer
-    implementation ("androidx.media3:media3-exoplayer-smoothstreaming:1.3.1") // Hỗ trợ phát SmoothStreaming với ExoPlayer
-    implementation ("androidx.media3:media3-datasource-cronet:1.3.1") // Tải dữ liệu sử dụng Cronet network stack
-    implementation ("androidx.media3:media3-datasource-okhttp:1.3.1") // Tải dữ liệu sử dụng OkHttp network stack
-    implementation ("androidx.media3:media3-datasource-rtmp:1.3.1") // Tải dữ liệu sử dụng librtmp
-    implementation ("androidx.media3:media3-ui:1.3.1") // Xây dựng giao diện phát media
-    implementation ("androidx.media3:media3-ui-leanback:1.3.1") // Xây dựng giao diện phát media cho Android TV sử dụng Jetpack Leanback library
-    implementation ("androidx.media3:media3-session:1.3.1") // Tiết lộ và điều khiển phiên media
-    implementation ("androidx.media3:media3-extractor:1.3.1") // Trích xuất dữ liệu từ các định dạng media
-    implementation ("androidx.media3:media3-cast:1.3.1") // Tích hợp với Cast
+    implementation ("com.google.accompanist:accompanist-insets:0.24.13-rc")
+    implementation ("com.google.android.exoplayer:exoplayer:2.16.1")
 
+
+    implementation("com.google.ai.client.generativeai:generativeai:0.5.0")
 
     implementation ("com.github.bumptech.glide:glide:4.12.0")
     implementation ("androidx.compose.material:material-icons-extended:1.0.5")

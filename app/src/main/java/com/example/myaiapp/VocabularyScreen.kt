@@ -14,6 +14,7 @@ import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
+import androidx.compose.material.DropdownMenu
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -60,8 +61,10 @@ fun VocabularyScreen(navController: NavController, homeName: String?) {
     var playAudioClicked by remember { mutableStateOf(false) }
     var isPlaying by remember { mutableStateOf(false) } // Trạng thái của âm thanh đang phát
     var showBookDialog by remember { mutableStateOf(false) } // State để điều khiển việc hiển thị hộp thoại
+    var expanded by remember { mutableStateOf(false) } // State để theo dõi trạng thái mở / đóng của DropdownMenu
 
     val vocabularyLists = listOf(vocab1Documents, vocab2Documents)
+    val selectedTabText = remember { mutableStateOf("Bài 1") }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -95,32 +98,65 @@ fun VocabularyScreen(navController: NavController, homeName: String?) {
             modifier = Modifier.fillMaxWidth()
         )
 
-        TabRow(
-            selectedTabIndex = selectedTabIndex,
-            modifier = Modifier.fillMaxWidth(),
-            indicator = { tabPositions ->
-                TabRowDefaults.Indicator(
-                    modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]),
-                    color = Color.Black // Màu của thanh dưới khi chọn tab
-                )
-            }
+        // Dropdown menu
+        Box(
+            modifier = Modifier
+                .padding(vertical = 8.dp, horizontal = 8.dp) // Thêm padding cho khoảng cách với màn hình
+                .border(1.dp, Color.Black, shape = MaterialTheme.shapes.small) // Thêm viền đen
         ) {
-            vocabularyLists.forEachIndexed { index, vocabularyDocuments ->
-                Tab(
-                    selected = selectedTabIndex == index,
-                    onClick = { selectedTabIndex = index },
-                    text = { Text("Bài ${index + 1}", color = Color.Black, onTextLayout = {}) },
+            Text(
+                text = selectedTabText.value,
+                modifier = Modifier
+                    .clickable(onClick = { expanded = true }) // Khi click vào text, mở dropdown menu
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            )
+            DropdownMenu(
+                expanded = expanded, // Sử dụng state để mở / đóng dropdown menu
+                onDismissRequest = { expanded = false }
+            ) {
+                Box(
                     modifier = Modifier
-                )
+                        .clickable {
+                            selectedTabIndex = 0
+                            selectedTabText.value = "Bài 1"
+                            expanded = false // Khi chọn một mục, đóng dropdown menu
+                        }
+                        .padding(vertical = 8.dp)
+                        .fillMaxWidth() // Đảm bảo rằng mỗi mục trong dropdown menu sẽ có chiều rộng tối đa
+                        .background(Color.White)
+                ) {
+                    Text(
+                        text = "Bài 1",
+                        style = TextStyle(color = Color.Black), // Sử dụng TextStyle để thiết lập màu chữ
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .clickable {
+                            selectedTabIndex = 1
+                            selectedTabText.value = "Bài 2"
+                            expanded = false // Khi chọn một mục, đóng dropdown menu
+                        }
+                        .padding(vertical = 8.dp)
+                        .fillMaxWidth() // Đảm bảo rằng mỗi mục trong dropdown menu sẽ có chiều rộng tối đa
+                        .background(Color.White)
+                ) {
+                    Text(
+                        text = "Bài 2",
+                        style = TextStyle(color = Color.Black), // Sử dụng TextStyle để thiết lập màu chữ
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
             }
         }
+
         if (showBookDialog) {
             VocabularyDataDialog(
                 vocabularyDocuments = vocabularyLists[selectedTabIndex],
                 onDismiss = { showBookDialog = false }
             )
         }
-
 
         if (playAudioClicked) {
             val audioUrls = vocabularyLists[selectedTabIndex].mapNotNull { it.getString("audio") }
@@ -129,12 +165,10 @@ fun VocabularyScreen(navController: NavController, homeName: String?) {
             }
         }
 
-        when (selectedTabIndex) {
-            0 -> VocabularyList(vocabularyDocuments = vocab1Documents, navController = navController, isPlaying = isPlaying)
-            1 -> VocabularyList(vocabularyDocuments = vocab2Documents, navController = navController, isPlaying = isPlaying)
-        }
+        VocabularyList(vocabularyDocuments = vocabularyLists[selectedTabIndex], navController = navController, isPlaying = isPlaying)
     }
 }
+
 @Composable
 fun VocabularyDataDialog(
     vocabularyDocuments: List<DocumentSnapshot>,
@@ -183,7 +217,6 @@ fun FlashcardDialog(
     confirmButtonContent: @Composable () -> Unit
 ) {
     var showFrontSide by remember { mutableStateOf(true) }
-
     AlertDialog(
         onDismissRequest = onDismissRequest,
         title = {
@@ -225,6 +258,7 @@ fun FlashcardDialog(
 
 
 
+
 @Composable
 fun VocabularyList(vocabularyDocuments: List<DocumentSnapshot>, navController: NavController, isPlaying: Boolean) {
     LazyColumn(
@@ -245,9 +279,7 @@ fun VocabularyItem(document: DocumentSnapshot, navController: NavController, isP
     val go = document.getString("go") ?: ""
     val romaji = document.getString("romaji") ?: ""
     val audioUrl = document.getString("audio")
-
     var itemIsPlaying by remember { mutableStateOf(isPlaying) } // Sử dụng biến var để theo dõi trạng thái
-
     Surface(
         modifier = Modifier
             .fillMaxWidth()

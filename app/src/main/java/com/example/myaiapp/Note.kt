@@ -7,5 +7,5 @@ data class Note(
     val id: String,
     val title: String ,
     val content: String ,
-    val timestamp: Timestamp? = null // Thay đổi kiểu dữ liệu của timestamp thành Timestamp?
+    val timestamp: Timestamp? = null
 )

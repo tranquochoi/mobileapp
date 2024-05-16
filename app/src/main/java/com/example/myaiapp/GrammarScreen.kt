@@ -1,9 +1,13 @@
 package com.example.myaiapp
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.material.AppBarDefaults
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentColor
@@ -20,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -75,33 +80,54 @@ fun GrammarScreen(navController: NavController, homeName: String?) {
         }
     }
 }
-
 @Composable
 fun GrammarTabs(navController: NavController, grammarDocuments: List<DocumentSnapshot>) {
     var selectedTabIndex by remember { mutableStateOf(0) }
+    var expanded by remember { mutableStateOf(false) } // State để theo dõi trạng thái mở / đóng của DropdownMenu
+
+    val items = grammarDocuments.mapIndexed { index, document ->
+        "Bài ${index + 1}" to index
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(8.dp)
     ) {
-        // Hiển thị các tab dưới dạng LazyRow để lướt
-        LazyRow {
-            items(grammarDocuments) { document ->
-                val isSelected = grammarDocuments.indexOf(document) == selectedTabIndex
-                Tab(
-                    selected = isSelected,
-                    onClick = { selectedTabIndex = grammarDocuments.indexOf(document) },
+        if (grammarDocuments.isNotEmpty()) { // Kiểm tra xem danh sách có rỗng không
+            // Hiển thị dropdown menu
+            Box(
+                modifier = Modifier
+                    .padding(vertical = 8.dp)
+                    .border(1.dp, Color.Black, shape = MaterialTheme.shapes.small) // Thêm viền đen
+            ) {
+                Text(
+                    text = items[selectedTabIndex].first,
                     modifier = Modifier
-                        .background(if (isSelected) Color.Black else Color.Transparent, MaterialTheme.shapes.small)
-                        .padding(horizontal = 8.dp, vertical = 4.dp) // Add padding here
+                        .clickable(onClick = { expanded = true }) // Khi click vào text, mở dropdown menu
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+                DropdownMenu(
+                    expanded = expanded, // Sử dụng state để mở / đóng dropdown menu
+                    onDismissRequest = { expanded = false }
                 ) {
-                    Text(
-                        text = "Bài ${grammarDocuments.indexOf(document) + 1}",
-                        color = if (isSelected) Color.White else Color.Black,
-                        onTextLayout = {}, // hoặc null nếu không cần
-
-                    )
+                    items.forEach { (title, index) ->
+                        Box(
+                            modifier = Modifier
+                                .clickable {
+                                    selectedTabIndex = index
+                                    expanded = false // Khi chọn một mục, đóng dropdown menu
+                                }
+                                .padding(vertical = 8.dp)
+                                .background(Color.White)
+                        ) {
+                            Text(
+                                text = title,
+                                style = TextStyle(color = Color.Black), // Sử dụng TextStyle để thiết lập màu chữ
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+                        }
+                    }
                 }
             }
         }

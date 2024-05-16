@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
@@ -32,6 +33,7 @@ import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Timelapse
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.Button
@@ -77,6 +79,7 @@ fun DetailTestScreen(navController: NavController, homeTestName: String?) {
     // Biến để theo dõi số tim còn lại
     var remainingLives by remember { mutableStateOf(3) }
     var isQuizResultDisplayed by remember { mutableStateOf(false) }
+    var isQuizStarted by remember { mutableStateOf(false) } // Biến để kiểm tra xem bài kiểm tra đã bắt đầu chưa
 
     // Hàm reset để thiết lập lại trạng thái của bài kiểm tra
     val resetQuiz: () -> Unit = {
@@ -125,60 +128,96 @@ fun DetailTestScreen(navController: NavController, homeTestName: String?) {
                     .padding(8.dp)
 
             ) {
-                // Calculate the number of completed quizzes
-                completedQuizCount = quizStates.values.count { it.optionSelected != null }
+                // Nếu bài kiểm tra chưa bắt đầu, hiển thị nút bắt đầu
+                if (!isQuizStarted) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(8.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Card(
+                            modifier = Modifier
+                                .aspectRatio(1.5f) // Thiết lập tỷ lệ khung hình cho Card
+                                .size(400.dp), // Thiết lập kích thước cho Card
+                            shape = RoundedCornerShape(8.dp), // Bo góc cho Card
+                            elevation = 8.dp // Tạo hiệu ứng đổ bóng cho Card
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.tt), // Thay "your_image_resource" bằng đường dẫn tới hình ảnh của bạn
+                                contentDescription = "Welcome Image",
+                                modifier = Modifier.fillMaxSize(), // Thiết lập kích thước full cho hình ảnh trong Card
+                                contentScale = ContentScale.Crop // Cắt bớt hình ảnh nếu cần
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(16.dp)) // Khoảng trống giữa hình ảnh và Button
+                        Button(
+                            onClick = { isQuizStarted = true },
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                        ) {
+                            Text("Bắt đầu thử thách", color = Color.White) // Thiết lập màu chữ là màu trắng
+                        }
+                    }
 
-                if (quizDocuments != null && selectedTabIndex in 0 until quizDocuments!!.size) {
-                    val currentQuizIndex = selectedTabIndex
-                    val currentQuizItem = quizDocuments!![currentQuizIndex]
+                } else {
+                    // Tương tự như trước
+                    // Calculate the number of completed quizzes
+                    completedQuizCount = quizStates.values.count { it.optionSelected != null }
 
-                    // Check if all quizzes in document "quiz_1" are completed
-                    if (completedQuizCount >= quizDocuments!!.size || remainingLives <= 0) {
-                        // Show result if all quizzes are completed or no remaining lives
-                        QuizResult(
-                            correctCount = quizStates.values.sumBy { if (it.isCorrect) 1 else 0 },
-                            incorrectCount = quizStates.values.sumBy { if (!it.isCorrect) 1 else 0 },
-                            onResetClick = resetQuiz // Truyền hàm reset để xử lý sự kiện khi người dùng nhấn nút reset
-                        )
-                    } else {
-                        // Show quiz details
-                        QuizDetails(
-                            quizItem = currentQuizItem,
-                            quizState = quizStates[currentQuizIndex] ?: QuizState(),
-                            onOptionSelected = { option ->
-                                val isCorrect = option == currentQuizItem.ans
-                                val updatedState = quizStates[currentQuizIndex]?.copy(
-                                    optionSelected = option,
-                                    isCorrect = isCorrect
-                                ) ?: QuizState(optionSelected = option, isCorrect = isCorrect)
-                                quizStates = quizStates + (currentQuizIndex to updatedState)
+                    if (quizDocuments != null && selectedTabIndex in 0 until quizDocuments!!.size) {
+                        val currentQuizIndex = selectedTabIndex
+                        val currentQuizItem = quizDocuments!![currentQuizIndex]
 
-                                // Giảm số tim nếu đáp án không chính xác
-                                if (!isCorrect) {
-                                    remainingLives--
+                        // Check if all quizzes in document "quiz_1" are completed
+                        if (completedQuizCount >= quizDocuments!!.size || remainingLives <= 0) {
+                            // Show result if all quizzes are completed or no remaining lives
+                            QuizResult(
+                                correctCount = quizStates.values.sumBy { if (it.isCorrect) 1 else 0 },
+                                incorrectCount = quizStates.values.sumBy { if (!it.isCorrect) 1 else 0 },
+                                onResetClick = resetQuiz // Truyền hàm reset để xử lý sự kiện khi người dùng nhấn nút reset
+                            )
+                        } else {
+                            // Show quiz details
+                            QuizDetails(
+                                quizItem = currentQuizItem,
+                                quizState = quizStates[currentQuizIndex] ?: QuizState(),
+                                onOptionSelected = { option ->
+                                    val isCorrect = option == currentQuizItem.ans
+                                    val updatedState = quizStates[currentQuizIndex]?.copy(
+                                        optionSelected = option,
+                                        isCorrect = isCorrect
+                                    ) ?: QuizState(optionSelected = option, isCorrect = isCorrect)
+                                    quizStates = quizStates + (currentQuizIndex to updatedState)
+
+                                    // Giảm số tim nếu đáp án không chính xác
+                                    if (!isCorrect) {
+                                        remainingLives--
+                                    }
+
+                                    // Perform the delay only if the delay hasn't already passed
+                                    if (!isDelayPassed) {
+                                        isDelayPassed = true
+                                        Handler(Looper.getMainLooper()).postDelayed({
+                                            // Move to the next question
+                                            val nextIndex = currentQuizIndex + 1
+                                            if (nextIndex < quizDocuments!!.size) {
+                                                selectedTabIndex = nextIndex
+                                                isDelayPassed = false // Reset the flag for the next question
+                                            }
+                                        }, 1000)
+                                    }
                                 }
+                            )
 
-                                // Perform the delay only if the delay hasn't already passed
-                                if (!isDelayPassed) {
-                                    isDelayPassed = true
-                                    Handler(Looper.getMainLooper()).postDelayed({
-                                        // Move to the next question
-                                        val nextIndex = currentQuizIndex + 1
-                                        if (nextIndex < quizDocuments!!.size) {
-                                            selectedTabIndex = nextIndex
-                                            isDelayPassed = false // Reset the flag for the next question
-                                        }
-                                    }, 1000)
-                                }
-                            }
-                        )
-
+                        }
                     }
                 }
             }
         }
     )
 }
+
 
 @Composable
 fun HorizontalScrollableTabRow(
@@ -371,47 +410,59 @@ fun QuizDetails(
         }
     }
 }
-
-
 @Composable
 fun QuizResult(
     correctCount: Int,
     incorrectCount: Int,
-    onResetClick: () -> Unit // Thêm một tham số mới để xử lý sự kiện khi người dùng nhấn nút "Reset"
+    onResetClick: () -> Unit
 ) {
-    // Tính số điểm cho từng câu
     val totalScore = correctCount * 10
-
+    val starRating = when {
+        correctCount >= 7 -> 3
+        correctCount >= 5 -> 2
+        else -> 1 
+    }
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        // Hình ảnh nền
         Image(
-            painter = painterResource(id = R.drawable.img), // Thay "background_image" bằng đường dẫn tới tệp ảnh của bạn
+            painter = painterResource(id = R.drawable.img),
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.FillBounds // Đảm bảo hình ảnh nền đầy đủ kích thước và không bị giãn ra
+            contentScale = ContentScale.FillBounds
         )
-
-        // Nội dung của QuizResult
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                "Tổng số điểm: $totalScore",
+                "$correctCount câu trả lời đúng",
                 fontSize = 20.sp,
-                fontStyle = FontStyle.Italic // Làm nghiêng chữ
-            ) // Kích thước chữ lớn hơn
+            )
+            Row {
+                repeat(3) { index ->
+                    Icon(
+                        imageVector = Icons.Filled.Star,
+                        contentDescription = "Star",
+                        tint = if (index < starRating) Color.Yellow else Color.Gray,
+                        modifier = Modifier
+                            .size(24.dp)
+                            .padding(end = 4.dp)
+                    )
+                }
+            }
             IconButton(
-                onClick = onResetClick // Gọi hàm xử lý khi nút "Reset" được nhấn
+                onClick = onResetClick
             ) {
                 Icon(Icons.Filled.Refresh, contentDescription = "Reset")
             }
         }
     }
 }
+
+
+
 
 @Composable
 fun ReviewScreen(quizDocuments: List<QuizItem>, quizStates: Map<Int, QuizState>) {
