@@ -49,11 +49,17 @@ fun VocabularyScreen(navController: NavController, homeName: String?) {
 
     var vocab1Documents by remember { mutableStateOf<List<DocumentSnapshot>>(emptyList()) }
     var vocab2Documents by remember { mutableStateOf<List<DocumentSnapshot>>(emptyList()) }
+    var vocab3Documents by remember { mutableStateOf<List<DocumentSnapshot>>(emptyList()) }
+    var vocab4Documents by remember { mutableStateOf<List<DocumentSnapshot>>(emptyList()) }
+    var vocab5Documents by remember { mutableStateOf<List<DocumentSnapshot>>(emptyList()) }
 
     LaunchedEffect(homeName) {
         if (!homeName.isNullOrEmpty()) {
             vocab1Documents = firestoreRepository.getVocabularyDocuments(homeName, "vocab1")
             vocab2Documents = firestoreRepository.getVocabularyDocuments(homeName, "vocab2")
+            vocab3Documents = firestoreRepository.getVocabularyDocuments(homeName, "vocab3")
+            vocab4Documents = firestoreRepository.getVocabularyDocuments(homeName, "vocab4")
+            vocab5Documents = firestoreRepository.getVocabularyDocuments(homeName, "vocab5")
         }
     }
 
@@ -63,7 +69,7 @@ fun VocabularyScreen(navController: NavController, homeName: String?) {
     var showBookDialog by remember { mutableStateOf(false) } // State để điều khiển việc hiển thị hộp thoại
     var expanded by remember { mutableStateOf(false) } // State để theo dõi trạng thái mở / đóng của DropdownMenu
 
-    val vocabularyLists = listOf(vocab1Documents, vocab2Documents)
+    val vocabularyLists = listOf(vocab1Documents, vocab2Documents, vocab3Documents, vocab4Documents, vocab5Documents)
     val selectedTabText = remember { mutableStateOf("Bài 1") }
 
     Column(
@@ -144,6 +150,57 @@ fun VocabularyScreen(navController: NavController, homeName: String?) {
                 ) {
                     Text(
                         text = "Bài 2",
+                        style = TextStyle(color = Color.Black), // Sử dụng TextStyle để thiết lập màu chữ
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .clickable {
+                            selectedTabIndex = 2
+                            selectedTabText.value = "Bài 3"
+                            expanded = false // Khi chọn một mục, đóng dropdown menu
+                        }
+                        .padding(vertical = 8.dp)
+                        .fillMaxWidth() // Đảm bảo rằng mỗi mục trong dropdown menu sẽ có chiều rộng tối đa
+                        .background(Color.White)
+                ) {
+                    Text(
+                        text = "Bài 3",
+                        style = TextStyle(color = Color.Black), // Sử dụng TextStyle để thiết lập màu chữ
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .clickable {
+                            selectedTabIndex = 3
+                            selectedTabText.value = "Bài 4"
+                            expanded = false // Khi chọn một mục, đóng dropdown menu
+                        }
+                        .padding(vertical = 8.dp)
+                        .fillMaxWidth() // Đảm bảo rằng mỗi mục trong dropdown menu sẽ có chiều rộng tối đa
+                        .background(Color.White)
+                ) {
+                    Text(
+                        text = "Bài 4",
+                        style = TextStyle(color = Color.Black), // Sử dụng TextStyle để thiết lập màu chữ
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .clickable {
+                            selectedTabIndex = 4
+                            selectedTabText.value = "Bài 5"
+                            expanded = false // Khi chọn một mục, đóng dropdown menu
+                        }
+                        .padding(vertical = 8.dp)
+                        .fillMaxWidth() // Đảm bảo rằng mỗi mục trong dropdown menu sẽ có chiều rộng tối đa
+                        .background(Color.White)
+                ) {
+                    Text(
+                        text = "Bài 5",
                         style = TextStyle(color = Color.Black), // Sử dụng TextStyle để thiết lập màu chữ
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )

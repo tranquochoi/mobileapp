@@ -68,19 +68,25 @@ fun KaiwaScreen(navController: NavController, homeName: String?) {
 
     var kaiwa1Documents by remember { mutableStateOf<List<DocumentSnapshot>>(emptyList()) }
     var kaiwa2Documents by remember { mutableStateOf<List<DocumentSnapshot>>(emptyList()) }
+    var kaiwa3Documents by remember { mutableStateOf<List<DocumentSnapshot>>(emptyList()) }
+    var kaiwa4Documents by remember { mutableStateOf<List<DocumentSnapshot>>(emptyList()) }
+    var kaiwa5Documents by remember { mutableStateOf<List<DocumentSnapshot>>(emptyList()) }
 
     LaunchedEffect(homeName) {
         if (!homeName.isNullOrEmpty()) {
             kaiwa1Documents = firestoreRepository.getKaiwaDocuments(homeName, "kaiwa1")
             kaiwa2Documents = firestoreRepository.getKaiwaDocuments(homeName, "kaiwa2")
+            kaiwa3Documents = firestoreRepository.getKaiwaDocuments(homeName, "kaiwa3")
+            kaiwa4Documents = firestoreRepository.getKaiwaDocuments(homeName, "kaiwa4")
+            kaiwa5Documents = firestoreRepository.getKaiwaDocuments(homeName, "kaiwa5")
         }
     }
 
     var expanded by remember { mutableStateOf(false) }
     var selectedTabIndex by remember { mutableStateOf(0) }
 
-    val kaiwaLists = listOf(kaiwa1Documents, kaiwa2Documents)
-    val tabNames = listOf("Bài 1", "Bài 2")
+    val kaiwaLists = listOf(kaiwa1Documents, kaiwa2Documents, kaiwa3Documents, kaiwa4Documents, kaiwa5Documents)
+    val tabNames = listOf("Bài 1", "Bài 2", "Bài 3", "Bài 4", "Bài 5")
 
     Column(
         modifier = Modifier.fillMaxSize()
